@@ -1,17 +1,34 @@
 /**
  * 典籍新生 - API 代理服务器
  * 解决浏览器跨域问题，同时保护 API Key 不暴露在前端
- * 
- * 使用方法：node server.js
+ *
+ * 使用方法：node server.js（本地） 或 部署到 Vercel（自动）
  */
 
 const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const config = require('./config');
 
-const PORT = config.PORT;
+// 配置：优先读取环境变量（Vercel），其次读取 config.js（本地）
+let config;
+try {
+    config = require('./config');
+} catch (e) {
+    config = {};
+}
+const CONFIG = {
+    MIMO_API_KEY: process.env.MIMO_API_KEY || config.MIMO_API_KEY,
+    MIMO_BASE_URL: process.env.MIMO_BASE_URL || config.MIMO_BASE_URL || 'https://token-plan-cn.xiaomimimo.com/v1',
+    TRANSLATION_MODEL: process.env.TRANSLATION_MODEL || config.TRANSLATION_MODEL || 'mimo-v2.5-pro',
+    VISION_MODEL: process.env.VISION_MODEL || config.VISION_MODEL || 'mimo-v2.5',
+    ANNOTATION_MODEL: process.env.ANNOTATION_MODEL || config.ANNOTATION_MODEL || 'mimo-v2.5-pro',
+    BAIDU_OCR_API_KEY: process.env.BAIDU_OCR_API_KEY || config.BAIDU_OCR_API_KEY,
+    BAIDU_OCR_SECRET_KEY: process.env.BAIDU_OCR_SECRET_KEY || config.BAIDU_OCR_SECRET_KEY,
+    PORT: process.env.PORT || config.PORT || 3001
+};
+
+const PORT = CONFIG.PORT;
 
 // 百度OCR AccessToken缓存
 let baiduAccessToken = null;
@@ -25,7 +42,7 @@ async function getBaiduAccessToken() {
         return baiduAccessToken;
     }
     return new Promise((resolve, reject) => {
-        const tokenUrl = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${config.BAIDU_OCR_API_KEY}&client_secret=${config.BAIDU_OCR_SECRET_KEY}`;
+        const tokenUrl = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${CONFIG.BAIDU_OCR_API_KEY}&client_secret=${CONFIG.BAIDU_OCR_SECRET_KEY}`;
         https.get(tokenUrl, (res) => {
             let data = '';
             res.on('data', chunk => data += chunk);
@@ -105,7 +122,7 @@ async function baiduOCR(imageBase64) {
  * 发送请求到 MiMo API（兼容 OpenAI 接口，带重试+超时）
  */
 async function callMiMo(model, messages, options = {}) {
-    const url = `${config.MIMO_BASE_URL}/chat/completions`;
+    const url = `${CONFIG.MIMO_BASE_URL}/chat/completions`;
     const maxRetries = 3;
     const timeout = options.timeout || 60000; // 默认60秒超时
     let lastError;
@@ -127,7 +144,7 @@ async function callMiMo(model, messages, options = {}) {
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${config.MIMO_API_KEY}`,
+                        'Authorization': `Bearer ${CONFIG.MIMO_API_KEY}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(body),
@@ -184,7 +201,7 @@ async function recognizeAncientText(imageBase64) {
         }
     ];
 
-    const result = await callMiMo(config.VISION_MODEL, messages, {
+    const result = await callMiMo(CONFIG.VISION_MODEL, messages, {
         temperature: 0.1,
         max_tokens: 2000
     });
@@ -203,7 +220,7 @@ async function punctuateText(text) {
         }
     ];
 
-    const result = await callMiMo(config.TRANSLATION_MODEL, messages, {
+    const result = await callMiMo(CONFIG.TRANSLATION_MODEL, messages, {
         temperature: 0.1,
         max_tokens: 2000
     });
@@ -222,7 +239,7 @@ async function translateText(text) {
         }
     ];
 
-    const result = await callMiMo(config.TRANSLATION_MODEL, messages, {
+    const result = await callMiMo(CONFIG.TRANSLATION_MODEL, messages, {
         temperature: 0.3,
         max_tokens: 4000
     });
@@ -256,7 +273,7 @@ ${text}`
     ];
 
     try {
-        const result = await callMiMo(config.ANNOTATION_MODEL, messages, {
+        const result = await callMiMo(CONFIG.ANNOTATION_MODEL, messages, {
             temperature: 0.1,
             max_tokens: 3000,
             timeout: 90000
@@ -379,7 +396,7 @@ ${text}`
     ];
 
     try {
-        const result = await callMiMo(config.ANNOTATION_MODEL, messages, {
+        const result = await callMiMo(CONFIG.ANNOTATION_MODEL, messages, {
             temperature: 0.1,
             max_tokens: 2000,
             timeout: 90000
@@ -540,7 +557,7 @@ ${translation || '（无翻译参考）'}
     ];
 
     try {
-        const result = await callMiMo(config.TRANSLATION_MODEL, messages, {
+        const result = await callMiMo(CONFIG.TRANSLATION_MODEL, messages, {
             temperature: 0.7,
             max_tokens: 2000,
             timeout: 90000
@@ -764,3 +781,13 @@ server.listen(PORT, () => {
     console.log(`     POST /api/story        - 故事生成`);
     console.log(`     POST /api/process-all  - 一站式处理\n`);
 });
+
+// Vercel Serverless 导出
+module.exports = async (req, res) => {
+    // 复用已有的请求处理逻辑
+    const url = new URL(req.url, `http://localhost:${PORT}`);
+    req.url = url.pathname + url.search;
+
+    // 手动触发 server 的请求处理
+    server.emit('request', req, res);
+};
