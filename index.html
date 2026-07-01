@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>典籍新生 - AI 驱动的古籍活化智能平台</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F4D6;</text></svg>">
 </head>
 <body class="is-loading">
     <!-- 页面加载卷轴遮罩 -->
@@ -18,7 +19,10 @@
         <div class="scroll-content">
             <div class="scroll-emblem">&#x1F4DC;</div>
             <div class="scroll-title">典籍新生</div>
-            <div class="scroll-subtitle">正在展开千年卷轴...</div>
+            <div class="scroll-subtitle" id="loaderTip">正在展开千年卷轴...</div>
+            <div class="scroll-progress-bar">
+                <div class="scroll-progress-fill"></div>
+            </div>
         </div>
     </div>
 
@@ -26,23 +30,28 @@
     <canvas id="particleCanvas"></canvas>
 
     <!-- 导航栏 -->
-    <nav class="navbar">
+    <nav class="navbar" id="navbar">
         <div class="nav-brand">
-            <span class="nav-icon">&#x1F4D6;</span>
+            <span class="nav-seal">典</span>
             <span class="nav-title">典籍新生</span>
         </div>
         <div class="nav-links">
             <a href="#hero" class="nav-link active">首页</a>
+            <a href="#story" class="nav-link">使命</a>
             <a href="#features" class="nav-link">功能</a>
             <a href="#demo" class="nav-link">体验</a>
+            <a href="#tech" class="nav-link">技术</a>
             <a href="#about" class="nav-link">关于</a>
         </div>
         <div class="nav-actions">
+            <button class="theme-toggle" id="themeToggle" title="切换夜间模式">
+                <span class="theme-icon-light">&#x1F319;</span>
+                <span class="theme-icon-dark">&#x2600;&#xFE0F;</span>
+            </button>
             <a href="#demo" class="btn btn-nav-cta">
                 <span class="btn-icon">&#x1F680;</span>
                 立即体验
             </a>
-            <div class="nav-badge">TRAE AI 创造力大赛</div>
         </div>
     </nav>
 
@@ -53,14 +62,17 @@
             <div class="hero-overlay"></div>
         </div>
         <div class="hero-content">
-            <div class="hero-tag">&#x2728; TRAE AI 创造力大赛参赛作品</div>
+            <div class="hero-badge-group">
+                <span class="hero-badge">&#x1F3C6; TRAE AI 创造力大赛</span>
+                <span class="hero-badge hero-badge-accent">&#x1F496; 社会公益赛道</span>
+            </div>
             <h1 class="hero-title">
                 <span class="title-line typewriter-line" data-text="让千年典籍"></span>
                 <span class="title-line highlight typewriter-line" data-text="在指尖重生"></span>
                 <span class="typewriter-cursor"></span>
             </h1>
             <p class="hero-subtitle">
-                上传一张古籍照片，AI 自动完成识别、断句、翻译、注释、知识图谱构建<br>
+                上传一张古籍照片，AI 自动完成识别、断句、翻译、注释、知识图谱构建与故事生成<br>
                 <span class="hero-emphasis">拍一张照片，读懂千年文明</span>
             </p>
             <div class="hero-cta">
@@ -68,25 +80,34 @@
                     <span class="btn-icon">&#x1F4F7;</span>
                     立即体验
                 </a>
-                <a href="#features" class="btn btn-secondary">
-                    <span class="btn-icon">&#x2728;</span>
-                    了解功能
+                <a href="#story" class="btn btn-secondary">
+                    <span class="btn-icon">&#x1F4D6;</span>
+                    了解使命
                 </a>
             </div>
             <div class="hero-stats">
                 <div class="stat-item">
-                    <div class="stat-number" data-count="95">0</div>
-                    <div class="stat-label">% 识别准确率</div>
+                    <div class="stat-number" data-count="97">0</div>
+                    <div class="stat-suffix">%</div>
+                    <div class="stat-label">识别准确率</div>
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat-item">
                     <div class="stat-number" data-count="3">0</div>
-                    <div class="stat-label">秒完成识别</div>
+                    <div class="stat-suffix">秒</div>
+                    <div class="stat-label">极速识别</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <div class="stat-number" data-count="24">0</div>
+                    <div class="stat-suffix">亿字</div>
+                    <div class="stat-label">古籍语料</div>
                 </div>
                 <div class="stat-divider"></div>
                 <div class="stat-item">
                     <div class="stat-number" data-count="6">0</div>
-                    <div class="stat-label">大核心功能</div>
+                    <div class="stat-suffix">项</div>
+                    <div class="stat-label">AI 能力</div>
                 </div>
             </div>
         </div>
@@ -94,371 +115,528 @@
             <div class="scroll-mouse">
                 <div class="scroll-wheel"></div>
             </div>
-            <span class="scroll-text">向下滚动</span>
+            <span class="scroll-text">向下探索</span>
         </div>
     </section>
 
-    <!-- 水墨分隔符：Hero → Features（深色→浅色） -->
+    <!-- 水墨分隔符 -->
     <div class="ink-divider ink-divider-dark-to-light" aria-hidden="true">
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,40 C120,10 240,70 360,45 C480,20 600,60 720,40 C840,20 960,65 1080,45 C1200,25 1320,55 1440,35 L1440,80 L0,80 Z" fill="#faf8f4"/>
-            <path d="M0,55 C180,25 360,75 540,50 C720,25 900,70 1080,50 C1260,30 1380,60 1440,50 L1440,80 L0,80 Z" fill="#faf8f4" opacity="0.6"/>
-            <path d="M0,65 C200,45 400,80 600,60 C800,40 1000,75 1200,58 C1320,50 1400,68 1440,62 L1440,80 L0,80 Z" fill="#faf8f4" opacity="0.3"/>
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+            <path d="M0,40 C120,10 240,70 360,45 C480,20 600,60 720,40 C840,20 960,65 1080,45 C1200,25 1320,55 1440,35 L1440,80 L0,80 Z" fill="var(--color-bg)"/>
+            <path d="M0,55 C180,25 360,75 540,50 C720,25 900,70 1080,50 C1260,30 1380,60 1440,50 L1440,80 L0,80 Z" fill="var(--color-bg)" opacity="0.6"/>
+            <path d="M0,65 C200,45 400,80 600,60 C800,40 1000,75 1200,58 C1320,50 1400,68 1440,62 L1440,80 L0,80 Z" fill="var(--color-bg)" opacity="0.3"/>
+        </svg>
+    </div>
+
+    <!-- 使命/痛点故事区 -->
+    <section id="story" class="story">
+        <div class="story-bg-decor">
+            <div class="story-seal">籍</div>
+        </div>
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag">&#x2764;&#xFE0F; 文化使命</div>
+                <h2 class="section-title">为什么我们需要"典籍新生"</h2>
+                <p class="section-desc">让古籍从博物馆的玻璃柜里，走进每一个人的日常</p>
+            </div>
+            <div class="story-content">
+                <div class="story-numbers">
+                    <div class="story-number-item">
+                        <div class="story-num" data-count="5000">0</div>
+                        <div class="story-num-unit">万册</div>
+                        <div class="story-num-label">中国现存古籍</div>
+                    </div>
+                    <div class="story-number-divider"></div>
+                    <div class="story-number-item">
+                        <div class="story-num story-num-red" data-count="99">0</div>
+                        <div class="story-num-unit">%</div>
+                        <div class="story-num-label">普通人无法直接阅读</div>
+                    </div>
+                    <div class="story-number-divider"></div>
+                    <div class="story-number-item">
+                        <div class="story-num" data-count="100">0</div>
+                        <div class="story-num-unit">%</div>
+                        <div class="story-num-label">文化不应被束之高阁</div>
+                    </div>
+                </div>
+                <div class="story-quote">
+                    <div class="quote-mark quote-mark-open">&#x201C;</div>
+                    <p class="quote-text">五千年文明留下了浩如烟海的典籍，但竖排繁体、无标点、生僻字，成为普通人与经典之间的高墙。AI，正在推倒这面墙。</p>
+                    <div class="quote-mark quote-mark-close">&#x201D;</div>
+                    <div class="quote-author">&#x2014; 典籍新生团队</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 水墨分隔符 -->
+    <div class="ink-divider ink-divider-light-to-light" aria-hidden="true">
+        <svg viewBox="0 0 1440 40" preserveAspectRatio="none">
+            <path d="M0,20 C200,0 400,35 600,18 C800,2 1000,30 1200,15 C1320,8 1400,22 1440,18 L1440,40 L0,40 Z" fill="var(--color-bg-warm)" opacity="0.5"/>
         </svg>
     </div>
 
     <!-- 功能展示区 -->
     <section id="features" class="features">
-        <!-- Features背景装饰 -->
         <div class="section-bg-decor">
             <div class="decor-circle decor-circle-1"></div>
             <div class="decor-circle decor-circle-2"></div>
             <div class="decor-float-char decor-char-1">典</div>
             <div class="decor-float-char decor-char-2">籍</div>
-            <div class="decor-float-char decor-char-3">文</div>
+            <div class="decor-float-char decor-char-3">新</div>
+            <div class="decor-float-char decor-char-4">生</div>
         </div>
-        <div class="section-header">
-            <div class="section-tag">核心功能</div>
-            <h2 class="section-title">从"看到"到"读懂"到"会用"</h2>
-            <p class="section-desc">六大 AI 能力串联成完整的古籍活化链路，让任何人都能轻松读懂千年典籍</p>
-        </div>
-        <div class="features-grid">
-            <div class="feature-card" data-aos="fade-up" data-delay="0">
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">&#x1F4F7;</div>
-                    <div class="feature-glow"></div>
-                </div>
-                <h3 class="feature-title">古籍拍照识别</h3>
-                <p class="feature-desc">支持竖排繁体、手写体、雕版印刷等多种古籍版式，双引擎 OCR 确保高准确率识别</p>
-                <div class="feature-tag">AI 视觉</div>
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag">&#x2728; 核心功能</div>
+                <h2 class="section-title">从"看到"到"读懂"到"会用"</h2>
+                <p class="section-desc">七大 AI 能力串联成完整的古籍活化链路，让任何人都能轻松读懂千年典籍</p>
             </div>
-            <div class="feature-card" data-aos="fade-up" data-delay="100">
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">&#x270D;&#xFE0F;</div>
-                    <div class="feature-glow"></div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">&#x1F4F7;</div>
+                        <div class="feature-glow"></div>
+                    </div>
+                    <h3 class="feature-title">古籍拍照识别</h3>
+                    <p class="feature-desc">支持竖排繁体、手写体、雕版印刷等多种古籍版式，双引擎 OCR 确保高准确率识别</p>
+                    <div class="feature-tag">AI 视觉</div>
                 </div>
-                <h3 class="feature-title">智能断句标点</h3>
-                <p class="feature-desc">基于 24 亿字古籍语料训练的专用模型，自动为无标点古文添加现代标点，误差率 &lt;2%</p>
-                <div class="feature-tag">通古大模型</div>
-            </div>
-            <div class="feature-card" data-aos="fade-up" data-delay="200">
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">&#x1F4DD;</div>
-                    <div class="feature-glow"></div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">&#x270D;&#xFE0F;</div>
+                        <div class="feature-glow"></div>
+                    </div>
+                    <h3 class="feature-title">智能断句标点</h3>
+                    <p class="feature-desc">基于 24 亿字古籍语料训练的专用模型，自动为无标点古文添加现代标点，误差率 &lt;2%</p>
+                    <div class="feature-tag">通古大模型</div>
                 </div>
-                <h3 class="feature-title">文白对照翻译</h3>
-                <p class="feature-desc">逐段展示原文与现代白话文翻译，点击任意句子查看详细释义和典故出处</p>
-                <div class="feature-tag">RAG 增强</div>
-            </div>
-            <div class="feature-card" data-aos="fade-up" data-delay="300">
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">&#x1F4DA;</div>
-                    <div class="feature-glow"></div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">&#x1F4DD;</div>
+                        <div class="feature-glow"></div>
+                    </div>
+                    <h3 class="feature-title">文白对照翻译</h3>
+                    <p class="feature-desc">逐段展示原文与现代白话文翻译，点击任意句子查看详细释义和典故出处</p>
+                    <div class="feature-tag">RAG 增强</div>
                 </div>
-                <h3 class="feature-title">AI 注释解读</h3>
-                <p class="feature-desc">自动识别生僻字词、人名地名、历史典故，生成通俗易懂的注释卡片</p>
-                <div class="feature-tag">知识库</div>
-            </div>
-            <div class="feature-card" data-aos="fade-up" data-delay="400">
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">&#x1F578;&#xFE0F;</div>
-                    <div class="feature-glow"></div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">&#x1F4DA;</div>
+                        <div class="feature-glow"></div>
+                    </div>
+                    <h3 class="feature-title">AI 注释解读</h3>
+                    <p class="feature-desc">自动识别生僻字词、人名地名、历史典故，生成通俗易懂的注释卡片</p>
+                    <div class="feature-tag">知识库</div>
                 </div>
-                <h3 class="feature-title">知识图谱可视化</h3>
-                <p class="feature-desc">从文本中自动提取人物、地点、事件，生成可交互的关系图谱，点击探索关联</p>
-                <div class="feature-tag">D3.js 可视化</div>
-            </div>
-            <div class="feature-card" data-aos="fade-up" data-delay="500">
-                <div class="feature-icon-wrapper">
-                    <div class="feature-icon">&#x1F3A5;</div>
-                    <div class="feature-glow"></div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">&#x1F578;&#xFE0F;</div>
+                        <div class="feature-glow"></div>
+                    </div>
+                    <h3 class="feature-title">知识图谱可视化</h3>
+                    <p class="feature-desc">从文本中自动提取人物、地点、事件，生成可交互的关系图谱，点击探索关联</p>
+                    <div class="feature-tag">D3.js 可视化</div>
                 </div>
-                <h3 class="feature-title">古籍故事生成</h3>
-                <p class="feature-desc">将古文内容转化为现代故事叙述，支持生成短视频脚本和精美分享卡片</p>
-                <div class="feature-tag">内容生成</div>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">&#x1F3A4;</div>
+                        <div class="feature-glow"></div>
+                    </div>
+                    <h3 class="feature-title">AI 语音朗读</h3>
+                    <p class="feature-desc">支持古文原文与译文的智能语音朗读，还原吟诵韵律，让古籍"声"临其境</p>
+                    <div class="feature-tag">语音合成</div>
+                </div>
+                <div class="feature-card feature-card-wide">
+                    <div class="feature-icon-wrapper">
+                        <div class="feature-icon">&#x1F916;</div>
+                        <div class="feature-glow"></div>
+                    </div>
+                    <h3 class="feature-title">AI 典籍问答</h3>
+                    <p class="feature-desc">对识别出的古籍内容自由提问，AI 基于原文给出有据可查的回答，不懂就问，轻松读懂千年智慧</p>
+                    <div class="feature-tag">智能对话</div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- 水墨分隔符：Features → Demo（浅色→深色） -->
+    <!-- 水墨分隔符 -->
     <div class="ink-divider ink-divider-light-to-dark" aria-hidden="true">
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,40 C120,70 240,10 360,35 C480,60 600,20 720,40 C840,60 960,15 1080,35 C1200,55 1320,25 1440,45 L1440,80 L0,80 Z" fill="#0a1628"/>
-            <path d="M0,55 C180,75 360,25 540,50 C720,75 900,30 1080,50 C1260,70 1380,40 1440,50 L1440,80 L0,80 Z" fill="#0a1628" opacity="0.6"/>
-            <path d="M0,65 C200,75 400,40 600,60 C800,80 1000,45 1200,62 C1320,70 1400,52 1440,58 L1440,80 L0,80 Z" fill="#0a1628" opacity="0.3"/>
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+            <path d="M0,40 C120,70 240,10 360,35 C480,60 600,20 720,40 C840,60 960,15 1080,35 C1200,55 1320,25 1440,45 L1440,80 L0,80 Z" fill="var(--color-bg-dark)"/>
+            <path d="M0,55 C180,75 360,25 540,50 C720,75 900,30 1080,50 C1260,70 1380,40 1440,50 L1440,80 L0,80 Z" fill="var(--color-bg-dark)" opacity="0.6"/>
+            <path d="M0,65 C200,75 400,40 600,60 C800,80 1000,45 1200,62 C1320,70 1400,52 1440,58 L1440,80 L0,80 Z" fill="var(--color-bg-dark)" opacity="0.3"/>
         </svg>
     </div>
 
     <!-- Demo 体验区 -->
     <section id="demo" class="demo">
         <div class="demo-bg"></div>
-        <!-- Demo背景装饰 -->
         <div class="demo-particles"></div>
-        <div class="section-header light">
-            <div class="section-tag light">立即体验</div>
-            <h2 class="section-title light">拍一张照片，读懂千年文明</h2>
-            <p class="section-desc light">上传古籍图片或选择示例，体验 AI 古籍活化的完整流程</p>
-        </div>
-
-        <div class="demo-container">
-            <!-- 上传区域 -->
-            <div class="upload-area" id="uploadArea">
-                <div class="upload-content">
-                    <div class="upload-icon">&#x1F4F7;</div>
-                    <h3 class="upload-title">上传古籍图片</h3>
-                    <p class="upload-desc">支持 JPG、PNG 格式，建议分辨率 800x600 以上</p>
-                    <div class="upload-buttons">
-                        <label class="btn btn-upload">
-                            <input type="file" id="fileInput" accept="image/*" hidden>
-                            <span class="btn-icon">&#x1F4C1;</span>
-                            选择图片
-                        </label>
-                        <button class="btn btn-sample" id="sampleBtn">
-                            <span class="btn-icon">&#x1F4D6;</span>
-                            使用示例
-                        </button>
-                    </div>
-                </div>
-                <div class="upload-drag-overlay">
-                    <div class="drag-icon">&#x1F4E5;</div>
-                    <p>松开以上传</p>
-                </div>
+        <div class="container">
+            <div class="section-header light">
+                <div class="section-tag light">&#x1F525; 立即体验</div>
+                <h2 class="section-title light">拍一张照片，读懂千年文明</h2>
+                <p class="section-desc light">上传古籍图片或选择示例，体验 AI 古籍活化的完整流程</p>
             </div>
 
-            <!-- 处理进度 -->
-            <div class="processing-area" id="processingArea" style="display: none;">
-                <div class="processing-image">
-                    <img id="processingImg" src="" alt="处理中">
-                    <div class="processing-scan-line"></div>
-                </div>
-                <div class="processing-steps">
-                    <div class="step" data-step="1">
-                        <div class="step-icon">&#x1F50D;</div>
-                        <div class="step-info">
-                            <div class="step-title">OCR 文字识别</div>
-                            <div class="step-progress">
-                                <div class="step-bar"></div>
-                            </div>
-                        </div>
-                        <div class="step-status">等待中</div>
-                    </div>
-                    <div class="step" data-step="2">
-                        <div class="step-icon">&#x270D;&#xFE0F;</div>
-                        <div class="step-info">
-                            <div class="step-title">智能断句标点</div>
-                            <div class="step-progress">
-                                <div class="step-bar"></div>
-                            </div>
-                        </div>
-                        <div class="step-status">等待中</div>
-                    </div>
-                    <div class="step" data-step="3">
-                        <div class="step-icon">&#x1F4DD;</div>
-                        <div class="step-info">
-                            <div class="step-title">文白对照翻译</div>
-                            <div class="step-progress">
-                                <div class="step-bar"></div>
-                            </div>
-                        </div>
-                        <div class="step-status">等待中</div>
-                    </div>
-                    <div class="step" data-step="4">
-                        <div class="step-icon">&#x1F4DA;</div>
-                        <div class="step-info">
-                            <div class="step-title">注释解读生成</div>
-                            <div class="step-progress">
-                                <div class="step-bar"></div>
-                            </div>
-                        </div>
-                        <div class="step-status">等待中</div>
-                    </div>
-                    <div class="step" data-step="5">
-                        <div class="step-icon">&#x1F578;&#xFE0F;</div>
-                        <div class="step-info">
-                            <div class="step-title">知识图谱构建</div>
-                            <div class="step-progress">
-                                <div class="step-bar"></div>
-                            </div>
-                        </div>
-                        <div class="step-status">等待中</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 结果展示 -->
-            <div class="result-area" id="resultArea" style="display: none;">
-                <!-- 标签切换 -->
-                <div class="result-tabs">
-                    <button class="tab-btn active" data-tab="translation">
-                        <span class="tab-icon">&#x1F4DD;</span>
-                        文白对照
-                    </button>
-                    <button class="tab-btn" data-tab="annotations">
-                        <span class="tab-icon">&#x1F4DA;</span>
-                        注释解读
-                    </button>
-                    <button class="tab-btn" data-tab="graph">
-                        <span class="tab-icon">&#x1F578;&#xFE0F;</span>
-                        知识图谱
-                    </button>
-                    <button class="tab-btn" data-tab="story">
-                        <span class="tab-icon">&#x1F3A5;</span>
-                        故事生成
-                    </button>
-                </div>
-
-                <!-- 文白对照 -->
-                <div class="tab-content active" id="translationTab">
-                    <div class="translation-view">
-                        <div class="original-text">
-                            <div class="text-header">
-                                <span class="text-label">&#x1F4D6; 原文</span>
-                                <span class="text-meta">识别置信度: 97.3%</span>
-                            </div>
-                            <div class="text-content" id="originalText"></div>
-                        </div>
-                        <div class="translation-text">
-                            <div class="text-header">
-                                <span class="text-label">&#x1F4DD; 现代译文</span>
-                                <button class="btn-copy" id="copyTranslation">&#x1F4CB; 复制</button>
-                            </div>
-                            <div class="text-content" id="translatedText"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 注释解读 -->
-                <div class="tab-content" id="annotationsTab">
-                    <div class="annotations-view">
-                        <div class="annotation-filters">
-                            <button class="filter-btn active" data-filter="all">全部</button>
-                            <button class="filter-btn" data-filter="person">人物</button>
-                            <button class="filter-btn" data-filter="place">地点</button>
-                            <button class="filter-btn" data-filter="term">术语</button>
-                            <button class="filter-btn" data-filter="allusion">典故</button>
-                        </div>
-                        <div class="annotations-list" id="annotationsList"></div>
-                    </div>
-                </div>
-
-                <!-- 知识图谱 -->
-                <div class="tab-content" id="graphTab">
-                    <div class="graph-view">
-                        <div class="graph-toolbar">
-                            <button class="graph-btn" id="resetGraph">&#x1F504; 重置视图</button>
-                            <button class="graph-btn" id="zoomIn">&#x2795; 放大</button>
-                            <button class="graph-btn" id="zoomOut">&#x2796; 缩小</button>
-                        </div>
-                        <div class="graph-container" id="graphContainer">
-                            <svg id="knowledgeGraph" width="100%" height="100%"></svg>
-                        </div>
-                        <div class="graph-legend">
-                            <div class="legend-item"><span class="legend-dot person"></span>人物</div>
-                            <div class="legend-item"><span class="legend-dot place"></span>地点</div>
-                            <div class="legend-item"><span class="legend-dot event"></span>事件</div>
-                            <div class="legend-item"><span class="legend-dot book"></span>典籍</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 故事生成 -->
-                <div class="tab-content" id="storyTab">
-                    <div class="story-view">
-                        <div class="story-header">
-                            <h3 class="story-title">&#x1F3A5; 古籍故事生成</h3>
-                            <p class="story-desc">AI 将古文内容转化为生动有趣的现代故事，让千年典籍焕发新的生命力</p>
-                            <button class="btn btn-primary" id="storyBtn">
-                                <span class="btn-icon">&#x1F3A5;</span>
-                                生成故事
+            <div class="demo-container">
+                <!-- 上传区域 -->
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <div class="upload-icon">&#x1F4F7;</div>
+                        <h3 class="upload-title">上传古籍图片</h3>
+                        <p class="upload-desc">支持 JPG、PNG 格式，建议分辨率 800x600 以上</p>
+                        <div class="upload-buttons">
+                            <label class="btn btn-upload">
+                                <input type="file" id="fileInput" accept="image/*" hidden>
+                                <span class="btn-icon">&#x1F4C1;</span>
+                                选择图片
+                            </label>
+                            <button class="btn btn-sample" id="sampleBtn">
+                                <span class="btn-icon">&#x1F4D6;</span>
+                                使用示例
                             </button>
                         </div>
-                        <div class="story-content" id="storyContent"></div>
+                        <p class="upload-tip">&#x1F4A1; 提示：试试《论语》《孟子》《道德经》等经典古籍图片</p>
+                    </div>
+                    <div class="upload-drag-overlay">
+                        <div class="drag-icon">&#x1F4E5;</div>
+                        <p>松开以上传</p>
                     </div>
                 </div>
 
-                <!-- 操作栏 -->
-                <div class="result-actions">
-                    <button class="btn btn-share" id="shareBtn">
-                        <span class="btn-icon">&#x1F4E3;</span>
-                        生成分享卡片
-                    </button>
-                    <button class="btn btn-reset" id="resetBtn">
-                        <span class="btn-icon">&#x1F504;</span>
-                        重新上传
-                    </button>
+                <!-- 处理进度 -->
+                <div class="processing-area" id="processingArea" style="display: none;">
+                    <div class="processing-image">
+                        <img id="processingImg" src="" alt="处理中">
+                        <div class="processing-scan-line"></div>
+                        <div class="processing-frame"></div>
+                    </div>
+                    <div class="processing-steps" id="processingSteps">
+                        <div class="step" data-step="1">
+                            <div class="step-icon">&#x1F50D;</div>
+                            <div class="step-info">
+                                <div class="step-title">OCR 文字识别</div>
+                                <div class="step-progress">
+                                    <div class="step-bar"></div>
+                                </div>
+                            </div>
+                            <div class="step-status">等待中</div>
+                        </div>
+                        <div class="step" data-step="2">
+                            <div class="step-icon">&#x270D;&#xFE0F;</div>
+                            <div class="step-info">
+                                <div class="step-title">智能断句标点</div>
+                                <div class="step-progress">
+                                    <div class="step-bar"></div>
+                                </div>
+                            </div>
+                            <div class="step-status">等待中</div>
+                        </div>
+                        <div class="step" data-step="3">
+                            <div class="step-icon">&#x1F4DD;</div>
+                            <div class="step-info">
+                                <div class="step-title">文白对照翻译</div>
+                                <div class="step-progress">
+                                    <div class="step-bar"></div>
+                                </div>
+                            </div>
+                            <div class="step-status">等待中</div>
+                        </div>
+                        <div class="step" data-step="4">
+                            <div class="step-icon">&#x1F4DA;</div>
+                            <div class="step-info">
+                                <div class="step-title">注释解读生成</div>
+                                <div class="step-progress">
+                                    <div class="step-bar"></div>
+                                </div>
+                            </div>
+                            <div class="step-status">等待中</div>
+                        </div>
+                        <div class="step" data-step="5">
+                            <div class="step-icon">&#x1F578;&#xFE0F;</div>
+                            <div class="step-info">
+                                <div class="step-title">知识图谱构建</div>
+                                <div class="step-progress">
+                                    <div class="step-bar"></div>
+                                </div>
+                            </div>
+                            <div class="step-status">等待中</div>
+                        </div>
+                    </div>
+                    <div class="processing-tip" id="processingTip">
+                        <span class="tip-icon">&#x1F4A1;</span>
+                        <span class="tip-text">古籍小知识：中国最早的书籍形式是简牍，用竹片或木片编联而成</span>
+                    </div>
+                </div>
+
+                <!-- 结果展示 -->
+                <div class="result-area" id="resultArea" style="display: none;">
+                    <!-- 结果标题栏 -->
+                    <div class="result-header">
+                        <div class="result-title">
+                            <span class="result-seal">&#x2714;</span>
+                            识别完成
+                        </div>
+                        <div class="result-controls">
+                            <button class="result-mode-btn active" data-view="horizontal" title="横排阅读">
+                                <span>&#x2630;</span>
+                            </button>
+                            <button class="result-mode-btn" data-view="vertical" title="竖排阅读">
+                                <span>&#x2631;</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 标签切换 -->
+                    <div class="result-tabs">
+                        <button class="tab-btn active" data-tab="translation">
+                            <span class="tab-icon">&#x1F4DD;</span>
+                            文白对照
+                        </button>
+                        <button class="tab-btn" data-tab="annotations">
+                            <span class="tab-icon">&#x1F4DA;</span>
+                            注释解读
+                        </button>
+                        <button class="tab-btn" data-tab="graph">
+                            <span class="tab-icon">&#x1F578;&#xFE0F;</span>
+                            知识图谱
+                        </button>
+                        <button class="tab-btn" data-tab="qa">
+                            <span class="tab-icon">&#x1F916;</span>
+                            AI 问答
+                        </button>
+                        <button class="tab-btn" data-tab="story">
+                            <span class="tab-icon">&#x1F3A5;</span>
+                            故事生成
+                        </button>
+                    </div>
+
+                    <!-- 文白对照 -->
+                    <div class="tab-content active" id="translationTab">
+                        <div class="translation-view" id="translationView">
+                            <div class="original-text panel-scrollable">
+                                <div class="text-header">
+                                    <span class="text-label">&#x1F4D6; 原文</span>
+                                    <div class="text-actions">
+                                        <button class="text-btn" id="speakOriginal" title="朗读原文">
+                                            <span>&#x1F50A;</span>
+                                        </button>
+                                        <button class="text-btn" id="copyOriginal" title="复制原文">
+                                            <span>&#x1F4CB;</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="text-content" id="originalText"></div>
+                            </div>
+                            <div class="translation-text panel-scrollable">
+                                <div class="text-header">
+                                    <span class="text-label">&#x1F4DD; 现代译文</span>
+                                    <div class="text-actions">
+                                        <button class="text-btn" id="speakTranslation" title="朗读译文">
+                                            <span>&#x1F50A;</span>
+                                        </button>
+                                        <button class="text-btn" id="copyTranslation" title="复制译文">
+                                            <span>&#x1F4CB;</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="text-content" id="translatedText"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 注释解读 -->
+                    <div class="tab-content" id="annotationsTab">
+                        <div class="annotations-view">
+                            <div class="annotation-filters">
+                                <button class="filter-btn active" data-filter="all">全部</button>
+                                <button class="filter-btn" data-filter="person">人物</button>
+                                <button class="filter-btn" data-filter="place">地点</button>
+                                <button class="filter-btn" data-filter="term">术语</button>
+                                <button class="filter-btn" data-filter="allusion">典故</button>
+                            </div>
+                            <div class="annotations-list panel-scrollable" id="annotationsList"></div>
+                        </div>
+                    </div>
+
+                    <!-- 知识图谱 -->
+                    <div class="tab-content" id="graphTab">
+                        <div class="graph-view">
+                            <div class="graph-toolbar">
+                                <button class="graph-btn" id="resetGraph">&#x1F504; 重置视图</button>
+                                <button class="graph-btn" id="zoomIn">&#x2795; 放大</button>
+                                <button class="graph-btn" id="zoomOut">&#x2796; 缩小</button>
+                            </div>
+                            <div class="graph-container" id="graphContainer">
+                                <svg id="knowledgeGraph" width="100%" height="100%"></svg>
+                                <div class="graph-placeholder" id="graphPlaceholder">
+                                    <div class="placeholder-icon">&#x1F578;&#xFE0F;</div>
+                                    <p>知识图谱构建中...</p>
+                                </div>
+                            </div>
+                            <div class="graph-legend">
+                                <div class="legend-item"><span class="legend-dot person"></span>人物</div>
+                                <div class="legend-item"><span class="legend-dot place"></span>地点</div>
+                                <div class="legend-item"><span class="legend-dot event"></span>事件</div>
+                                <div class="legend-item"><span class="legend-dot book"></span>典籍</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI 问答 -->
+                    <div class="tab-content" id="qaTab">
+                        <div class="qa-view">
+                            <div class="qa-intro">
+                                <span class="qa-intro-icon">&#x1F916;</span>
+                                <p>基于识别出的古籍内容，向 AI 提问吧！例如："这段话的核心思想是什么？"、"孔子是谁？"</p>
+                            </div>
+                            <div class="qa-messages panel-scrollable" id="qaMessages">
+                                <div class="qa-message qa-message-ai">
+                                    <div class="qa-avatar">&#x1F4D6;</div>
+                                    <div class="qa-bubble">
+                                        你好！我是典籍助手，已经阅读了你上传的古籍内容。有什么想了解的吗？
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="qa-input-area">
+                                <input type="text" class="qa-input" id="qaInput" placeholder="输入你的问题，按回车发送..." disabled>
+                                <button class="qa-send-btn" id="qaSendBtn" disabled>
+                                    <span>&#x27A4;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 故事生成 -->
+                    <div class="tab-content" id="storyTab">
+                        <div class="story-gen-view">
+                            <div class="story-gen-header">
+                                <h3 class="story-gen-title">&#x1F3A5; 古籍故事生成</h3>
+                                <p class="story-gen-desc">AI 将古文内容转化为生动有趣的现代故事，让千年典籍焕发新的生命力</p>
+                                <button class="btn btn-primary" id="storyBtn">
+                                    <span class="btn-icon">&#x2728;</span>
+                                    生成故事
+                                </button>
+                            </div>
+                            <div class="story-content panel-scrollable" id="storyContent">
+                                <div class="story-placeholder">
+                                    <div class="placeholder-icon">&#x1F4D6;</div>
+                                    <p>点击上方按钮，AI 将为你讲述这段古籍背后的故事</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 操作栏 -->
+                    <div class="result-actions">
+                        <button class="btn btn-share" id="shareBtn">
+                            <span class="btn-icon">&#x1F4E3;</span>
+                            生成分享卡片
+                        </button>
+                        <button class="btn btn-reset" id="resetBtn">
+                            <span class="btn-icon">&#x1F504;</span>
+                            重新上传
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 水墨分隔符：Demo → Tech（深色→浅色） -->
+    <!-- 水墨分隔符 -->
     <div class="ink-divider ink-divider-dark-to-light" aria-hidden="true">
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,45 C160,15 300,65 480,40 C660,15 820,60 980,38 C1140,16 1300,55 1440,30 L1440,80 L0,80 Z" fill="#faf8f4"/>
-            <path d="M0,58 C200,30 380,72 580,48 C780,24 960,68 1160,45 C1300,30 1400,55 1440,48 L1440,80 L0,80 Z" fill="#faf8f4" opacity="0.6"/>
-            <path d="M0,68 C240,50 460,78 700,60 C940,42 1140,72 1320,58 C1400,52 1440,65 1440,62 L1440,80 L0,80 Z" fill="#faf8f4" opacity="0.3"/>
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+            <path d="M0,45 C160,15 300,65 480,40 C660,15 820,60 980,38 C1140,16 1300,55 1440,30 L1440,80 L0,80 Z" fill="var(--color-bg)"/>
+            <path d="M0,58 C200,30 380,72 580,48 C780,24 960,68 1160,45 C1300,30 1400,55 1440,48 L1440,80 L0,80 Z" fill="var(--color-bg)" opacity="0.6"/>
+            <path d="M0,68 C240,50 460,78 700,60 C940,42 1140,72 1320,58 C1400,52 1440,65 1440,62 L1440,80 L0,80 Z" fill="var(--color-bg)" opacity="0.3"/>
         </svg>
     </div>
 
     <!-- 技术亮点 -->
     <section id="tech" class="tech">
-        <div class="section-header">
-            <div class="section-tag">技术架构</div>
-            <h2 class="section-title">前沿 AI 技术深度应用</h2>
-            <p class="section-desc">双引擎 OCR + 通古大模型 + RAG 检索增强 + 知识图谱可视化</p>
-        </div>
-        <!-- Tech背景装饰 -->
-        <div class="tech-bg-grid"></div>
-        <div class="tech-showcase">
-            <div class="tech-flow">
-                <div class="tech-node">
-                    <div class="tech-node-icon">&#x1F4F7;</div>
-                    <div class="tech-node-title">古籍 OCR</div>
-                    <div class="tech-node-desc">云聪古籍 API + Qwen-VL 双引擎</div>
+        <div class="container">
+            <div class="section-header">
+                <div class="section-tag">&#x2699;&#xFE0F; 技术架构</div>
+                <h2 class="section-title">前沿 AI 技术深度应用</h2>
+                <p class="section-desc">双引擎 OCR + 通古大模型 + RAG 检索增强 + 知识图谱可视化 + Web Speech API</p>
+            </div>
+            <div class="tech-bg-grid"></div>
+            <div class="tech-showcase">
+                <div class="tech-flow">
+                    <div class="tech-node">
+                        <div class="tech-node-icon">&#x1F4F7;</div>
+                        <div class="tech-node-title">古籍 OCR</div>
+                        <div class="tech-node-desc">云聪古籍 API + Qwen-VL 双引擎</div>
+                    </div>
+                    <div class="tech-arrow">&#x27A1;</div>
+                    <div class="tech-node">
+                        <div class="tech-node-icon">&#x270D;&#xFE0F;</div>
+                        <div class="tech-node-title">断句标点</div>
+                        <div class="tech-node-desc">通古大模型 TongGu-LLM</div>
+                    </div>
+                    <div class="tech-arrow">&#x27A1;</div>
+                    <div class="tech-node">
+                        <div class="tech-node-icon">&#x1F4DD;</div>
+                        <div class="tech-node-title">文白翻译</div>
+                        <div class="tech-node-desc">通古大模型 + RAG 增强</div>
+                    </div>
+                    <div class="tech-arrow">&#x27A1;</div>
+                    <div class="tech-node">
+                        <div class="tech-node-icon">&#x1F916;</div>
+                        <div class="tech-node-title">智能问答</div>
+                        <div class="tech-node-desc">上下文感知对话</div>
+                    </div>
+                    <div class="tech-arrow">&#x27A1;</div>
+                    <div class="tech-node">
+                        <div class="tech-node-icon">&#x1F578;&#xFE0F;</div>
+                        <div class="tech-node-title">知识图谱</div>
+                        <div class="tech-node-desc">D3.js 力导向图可视化</div>
+                    </div>
                 </div>
-                <div class="tech-arrow">&#x27A1;</div>
-                <div class="tech-node">
-                    <div class="tech-node-icon">&#x270D;&#xFE0F;</div>
-                    <div class="tech-node-title">断句标点</div>
-                    <div class="tech-node-desc">通古大模型 TongGu-LLM</div>
-                </div>
-                <div class="tech-arrow">&#x27A1;</div>
-                <div class="tech-node">
-                    <div class="tech-node-icon">&#x1F4DD;</div>
-                    <div class="tech-node-title">文白翻译</div>
-                    <div class="tech-node-desc">通古大模型 + RAG 增强</div>
-                </div>
-                <div class="tech-arrow">&#x27A1;</div>
-                <div class="tech-node">
-                    <div class="tech-node-icon">&#x1F578;&#xFE0F;</div>
-                    <div class="tech-node-title">知识图谱</div>
-                    <div class="tech-node-desc">D3.js 力导向图可视化</div>
+                <div class="tech-stack">
+                    <div class="tech-stack-item">
+                        <span class="tech-dot"></span>
+                        <span>前端：HTML5 Canvas / D3.js / Web Speech API</span>
+                    </div>
+                    <div class="tech-stack-item">
+                        <span class="tech-dot"></span>
+                        <span>后端：Node.js / Express</span>
+                    </div>
+                    <div class="tech-stack-item">
+                        <span class="tech-dot"></span>
+                        <span>AI 层：MIMO API / 通古大模型 / Qwen-VL</span>
+                    </div>
+                    <div class="tech-stack-item">
+                        <span class="tech-dot"></span>
+                        <span>部署：Vercel Serverless / GitHub</span>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- 水墨分隔符：Tech → About（浅色→深色） -->
+    <!-- 水墨分隔符 -->
     <div class="ink-divider ink-divider-light-to-dark" aria-hidden="true">
-        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,35 C140,65 280,10 440,38 C600,65 780,18 940,42 C1100,65 1260,22 1440,48 L1440,80 L0,80 Z" fill="#0a1628"/>
-            <path d="M0,52 C180,72 360,28 560,52 C760,75 940,32 1120,55 C1280,72 1380,42 1440,52 L1440,80 L0,80 Z" fill="#0a1628" opacity="0.6"/>
-            <path d="M0,66 C220,76 440,42 680,62 C920,80 1120,48 1280,64 C1380,72 1440,55 1440,60 L1440,80 L0,80 Z" fill="#0a1628" opacity="0.3"/>
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none">
+            <path d="M0,35 C140,65 280,10 440,38 C600,65 780,18 940,42 C1100,65 1260,22 1440,48 L1440,80 L0,80 Z" fill="var(--color-bg-dark)"/>
+            <path d="M0,52 C180,72 360,28 560,52 C760,75 940,32 1120,55 C1280,72 1380,42 1440,52 L1440,80 L0,80 Z" fill="var(--color-bg-dark)" opacity="0.6"/>
+            <path d="M0,66 C220,76 440,42 680,62 C920,80 1120,48 1280,64 C1380,72 1440,55 1440,60 L1440,80 L0,80 Z" fill="var(--color-bg-dark)" opacity="0.3"/>
         </svg>
     </div>
 
     <!-- 关于我们 -->
     <section id="about" class="about">
         <div class="about-bg"></div>
-        <!-- About背景装饰 -->
         <div class="about-decor">
             <div class="about-decor-circle about-decor-circle-1"></div>
             <div class="about-decor-circle about-decor-circle-2"></div>
             <div class="about-decor-line about-decor-line-1"></div>
         </div>
-        <div class="about-content">
+        <div class="container">
             <div class="section-header light">
-                <div class="section-tag light">关于项目</div>
+                <div class="section-tag light">&#x1F31F; 关于项目</div>
                 <h2 class="section-title light">让古籍从"博物馆"走进"生活"</h2>
             </div>
             <div class="about-grid">
@@ -479,11 +657,13 @@
                 </div>
             </div>
             <div class="about-footer">
+                <div class="about-seal">&#x5178;&#x7C4D;&#x65B0;&#x751F;</div>
                 <p class="about-quote">"典籍新生"参加 TRAE AI 创造力大赛 &middot; 社会公益赛道 &middot; 古籍活化工具</p>
                 <div class="about-badges">
                     <span class="about-badge">&#x1F3C6; 附加赛题</span>
                     <span class="about-badge">&#x1F4BB; 网页应用</span>
                     <span class="about-badge">&#x1F916; AI 驱动</span>
+                    <span class="about-badge">&#x2764;&#xFE0F; 文化公益</span>
                 </div>
             </div>
         </div>
@@ -491,18 +671,27 @@
 
     <!-- 页脚 -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-brand">
-                <span class="footer-icon">&#x1F4D6;</span>
-                <span class="footer-title">典籍新生</span>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-seal">典</span>
+                    <div class="footer-brand-text">
+                        <span class="footer-title">典籍新生</span>
+                        <span class="footer-subtitle">Classics Reborn</span>
+                    </div>
+                </div>
+                <p class="footer-desc">AI 驱动的古籍活化智能平台 &middot; 让千年文明触手可及</p>
+                <div class="footer-links">
+                    <a href="#hero" class="footer-link">首页</a>
+                    <a href="#features" class="footer-link">功能</a>
+                    <a href="#demo" class="footer-link">体验</a>
+                    <a href="#about" class="footer-link">关于</a>
+                </div>
+                <div class="footer-bottom">
+                    <p class="footer-copy">&copy; 2026 典籍新生团队 &middot; TRAE AI 创造力大赛参赛作品</p>
+                    <p class="footer-motto">&#x201C;为往圣继绝学&#x201D;</p>
+                </div>
             </div>
-            <p class="footer-desc">AI 驱动的古籍活化智能平台 &middot; 让千年文明触手可及</p>
-            <div class="footer-links">
-                <a href="#" class="footer-link">GitHub</a>
-                <a href="#" class="footer-link">演示视频</a>
-                <a href="#" class="footer-link">技术文档</a>
-            </div>
-            <p class="footer-copy">&copy; 2026 典籍新生团队 &middot; TRAE AI 创造力大赛参赛作品</p>
         </div>
     </footer>
 
@@ -513,15 +702,27 @@
             <button class="modal-close" id="modalClose">&times;</button>
             <h3 class="modal-title">&#x1F389; 分享卡片已生成</h3>
             <div class="share-card" id="shareCard">
-                <div class="share-card-header">
-                    <span class="share-card-icon">&#x1F4D6;</span>
-                    <span class="share-card-brand">典籍新生</span>
-                </div>
-                <div class="share-card-quote" id="shareQuote"></div>
-                <div class="share-card-translation" id="shareTranslation"></div>
-                <div class="share-card-footer">
-                    <span>AI 驱动的古籍活化平台</span>
-                    <span>dianji-xinsheng.vercel.app</span>
+                <div class="share-card-bg"></div>
+                <div class="share-card-inner">
+                    <div class="share-card-header">
+                        <span class="share-card-seal">典</span>
+                        <div class="share-card-header-text">
+                            <span class="share-card-brand">典籍新生</span>
+                            <span class="share-card-slogan">让千年典籍在指尖重生</span>
+                        </div>
+                    </div>
+                    <div class="share-card-divider"></div>
+                    <div class="share-card-quote" id="shareQuote"></div>
+                    <div class="share-card-translation" id="shareTranslation"></div>
+                    <div class="share-card-footer">
+                        <div class="share-card-qr">
+                            <div class="qr-placeholder">&#x1F4F1;</div>
+                        </div>
+                        <div class="share-card-info">
+                            <span>AI 驱动的古籍活化平台</span>
+                            <span class="share-card-url">dianji-xinsheng.vercel.app</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-actions">
@@ -536,6 +737,9 @@
             </div>
         </div>
     </div>
+
+    <!-- Toast 容器 -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <!-- 全局滚动进度条 -->
     <div class="scroll-progress" id="scrollProgress"></div>
