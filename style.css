@@ -154,6 +154,10 @@ body {
     pointer-events: none;
 }
 
+.scroll-loader.opened {
+    background: transparent;
+}
+
 /* 上下卷轴杆 */
 .scroll-rod {
     position: absolute;
@@ -627,7 +631,7 @@ body.is-loaded .scroll-indicator {
 
 .title-line {
     display: block;
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.1s ease;
 }
 
@@ -639,48 +643,20 @@ body.is-loaded .scroll-indicator {
     opacity: 1;
 }
 
-/* 金色流光扫过效果 */
+/* 金色流光扫过效果 - 改用text-shadow方案避免background-clip渲染问题 */
 .title-line.shimmer {
-    background: linear-gradient(
-        90deg,
-        #ffffff 0%,
-        #ffffff 40%,
-        #c9a96e 50%,
-        #e8d5a3 55%,
-        #c9a96e 60%,
-        #ffffff 70%,
-        #ffffff 100%
-    );
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 3.5s linear infinite;
+    color: #ffffff;
+    animation: goldShimmer 3.5s ease-in-out infinite;
 }
 
 .title-line.highlight.shimmer {
-    background: linear-gradient(
-        90deg,
-        #c9a96e 0%,
-        #c9a96e 30%,
-        #fff5d6 45%,
-        #e8d5a3 50%,
-        #fff5d6 55%,
-        #c9a96e 70%,
-        #c9a96e 100%
-    );
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 3s linear infinite;
+    color: var(--color-accent);
+    animation: goldShimmer 3s ease-in-out infinite;
 }
 
 .title-line.highlight {
-    background: linear-gradient(135deg, var(--color-accent), #e8d5a3);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--color-accent);
+    text-shadow: 0 0 20px rgba(201, 169, 110, 0.3);
     position: relative;
 }
 
@@ -3520,6 +3496,11 @@ body.is-loaded .scroll-indicator {
 @keyframes shimmer {
     0% { background-position: 200% center; }
     100% { background-position: -200% center; }
+}
+
+@keyframes goldShimmer {
+    0%, 100% { text-shadow: 0 0 10px rgba(201, 169, 110, 0.2); }
+    50% { text-shadow: 0 0 25px rgba(201, 169, 110, 0.6), 0 0 50px rgba(232, 213, 163, 0.3); }
 }
 
 @keyframes floatSlow {
