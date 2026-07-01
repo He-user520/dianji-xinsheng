@@ -1648,6 +1648,273 @@ function initSmoothScroll() {
 }
 
 // ========================================
+// 全局滚动进度条
+// ========================================
+function initScrollProgress() {
+    const progressBar = document.getElementById('scrollProgress');
+    if (!progressBar) return;
+    
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.pageYOffset;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercent = (scrollTop / docHeight) * 100;
+        progressBar.style.width = scrollPercent + '%';
+    });
+}
+
+// ========================================
+// 返回顶部按钮
+// ========================================
+function initBackToTop() {
+    const btn = document.getElementById('backToTop');
+    if (!btn) return;
+    
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 600) {
+            btn.classList.add('visible');
+        } else {
+            btn.classList.remove('visible');
+        }
+    });
+    
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+// ========================================
+// 增强版全局滚动入场动画
+// ========================================
+function initEnhancedScrollAnimations() {
+    // 所有section-header入场
+    const sectionHeaders = document.querySelectorAll('.section-header');
+    // feature-card入场
+    const featureCards = document.querySelectorAll('.feature-card');
+    // tech-node入场
+    const techNodes = document.querySelectorAll('.tech-node');
+    // about-card入场
+    const aboutCards = document.querySelectorAll('.about-card');
+    // about-footer入场
+    const aboutFooters = document.querySelectorAll('.about-footer');
+    // footer入场
+    const footer = document.querySelector('.footer');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // 添加stagger delay
+                const parent = entry.target.parentElement;
+                const index = Array.from(parent ? parent.children : []).indexOf(entry.target);
+                const delay = Math.min(index * 150, 900); // 每个元素延迟150ms，最大900ms
+                
+                setTimeout(() => {
+                    entry.target.classList.add('in-view', 'aos-animate');
+                }, delay);
+                
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    
+    // 观察所有目标元素
+    [...sectionHeaders, ...featureCards, ...techNodes, ...aboutCards, ...aboutFooters].forEach(el => {
+        observer.observe(el);
+    });
+    
+    if (footer) observer.observe(footer);
+}
+
+// ========================================
+// About卡片3D倾斜效果
+// ========================================
+function initAboutCardTilt() {
+    const cards = document.querySelectorAll('.about-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / centerY * -8; // -8 to 8 degrees
+            const rotateY = (x - centerX) / centerX * 8;
+            
+            card.style.transform = `translateY(-6px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+            card.style.transition = 'transform 0.5s ease';
+            setTimeout(() => {
+                card.style.transition = '';
+            }, 500);
+        });
+        
+        card.addEventListener('mouseenter', () => {
+            card.style.transition = 'box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease';
+        });
+    });
+}
+
+// ========================================
+// Demo上传区域波纹效果
+// ========================================
+function initUploadRipple() {
+    const uploadArea = document.getElementById('uploadArea');
+    if (!uploadArea) return;
+    
+    uploadArea.addEventListener('mouseenter', () => {
+        createRipple(uploadArea);
+    });
+    
+    uploadArea.addEventListener('click', (e) => {
+        // 在点击位置创建波纹
+        const ripple = document.createElement('div');
+        ripple.style.cssText = `
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(201, 169, 110, 0.2), transparent);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: rippleExpand 0.8s ease-out forwards;
+        `;
+        const rect = uploadArea.getBoundingClientRect();
+        ripple.style.left = (e.clientX - rect.left) + 'px';
+        ripple.style.top = (e.clientY - rect.top) + 'px';
+        uploadArea.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 800);
+    });
+}
+
+function createRipple(container) {
+    const existing = container.querySelectorAll('.auto-ripple');
+    if (existing.length > 2) return; // 限制数量
+    
+    const ripple = document.createElement('div');
+    ripple.classList.add('auto-ripple');
+    ripple.style.cssText = `
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(201, 169, 110, 0.05), transparent 70%);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: 0;
+        animation: rippleFade 2s ease-out forwards;
+    `;
+    ripple.style.left = Math.random() * 100 + '%';
+    ripple.style.top = Math.random() * 100 + '%';
+    container.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 2000);
+}
+
+// ========================================
+// 粒子Canvas区域感知
+// ========================================
+function initParticleZoneAwareness() {
+    const sections = document.querySelectorAll('section');
+    
+    window.addEventListener('scroll', () => {
+        const scrollY = window.pageYOffset;
+        const viewHeight = window.innerHeight;
+        const centerY = scrollY + viewHeight / 2;
+        
+        // 判断当前可视区域属于哪个section
+        let currentSection = null;
+        sections.forEach(section => {
+            const top = section.offsetTop;
+            const bottom = top + section.offsetHeight;
+            if (centerY >= top && centerY < bottom) {
+                currentSection = section;
+            }
+        });
+        
+        // 根据section调整canvas透明度
+        const canvas = document.getElementById('particleCanvas');
+        if (!canvas) return;
+        
+        if (currentSection) {
+            const isDark = currentSection.classList.contains('hero') || 
+                          currentSection.classList.contains('demo') || 
+                          currentSection.classList.contains('about');
+            canvas.style.opacity = isDark ? '0.4' : '0.15';
+        }
+    });
+}
+
+// ========================================
+// 数字计数动画增强（带缓动效果）
+// ========================================
+function initEnhancedCounters() {
+    const counters = document.querySelectorAll('.stat-number');
+    
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-count'));
+        const duration = 2000;
+        const startTime = performance.now();
+        
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+        
+        function update(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easedProgress = easeOutCubic(progress);
+            const current = Math.round(easedProgress * target);
+            counter.textContent = current;
+            
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            } else {
+                counter.textContent = target;
+            }
+        }
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    requestAnimationFrame(update);
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        observer.observe(counter);
+    });
+}
+
+// ========================================
+// 水墨分隔符入场动画
+// ========================================
+function initInkDividerAnimations() {
+    const dividers = document.querySelectorAll('.ink-divider');
+    
+    dividers.forEach(divider => {
+        divider.style.opacity = '0';
+        divider.style.transform = 'scaleY(0)';
+        divider.style.transformOrigin = 'top';
+        divider.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+    });
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'scaleY(1)';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.3 });
+    
+    dividers.forEach(d => observer.observe(d));
+}
+
+// ========================================
 // 初始化
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
@@ -1658,11 +1925,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('particleCanvas');
     if (canvas) new InkParticleSystem(canvas);
 
-    // 初始化所有功能
+    // 导航栏
     initNavbar();
-    animateCounters();
-    initScrollAnimations();
+    
+    // 增强版全局功能
+    initEnhancedScrollAnimations();
+    initScrollProgress();
+    initBackToTop();
+    initUploadRipple();
+    initAboutCardTilt();
+    initParticleZoneAwareness();
+    initInkDividerAnimations();
+
+    // 计数器（增强版，替代原有 animateCounters）
+    initEnhancedCounters();
+
+    // 上传
     initUpload();
+    
+    // 其他功能
     initTabs();
     initAnnotationFilters();
     initCopy();

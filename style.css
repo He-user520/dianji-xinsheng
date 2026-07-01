@@ -931,10 +931,12 @@ body.is-loaded .scroll-indicator {
     border-radius: var(--radius-lg);
     padding: 2rem;
     text-align: center;
-    transition: var(--transition);
+    transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
 }
 
 .feature-card::before {
@@ -1005,6 +1007,7 @@ body.is-loaded .scroll-indicator {
     font-size: 2.5rem;
     position: relative;
     z-index: 1;
+    animation: iconFloat 3s ease-in-out infinite;
 }
 
 .feature-glow {
@@ -1048,6 +1051,8 @@ body.is-loaded .scroll-indicator {
     color: var(--color-secondary);
     border-radius: 12px;
     font-weight: 600;
+    position: relative;
+    overflow: hidden;
 }
 
 /* ========================================
@@ -1078,14 +1083,17 @@ body.is-loaded .scroll-indicator {
 
 /* Upload Area */
 .upload-area {
-    background: var(--color-card-dark);
-    border: 2px dashed rgba(201, 169, 110, 0.3);
+    background: linear-gradient(var(--color-bg-dark), var(--color-bg-dark)) padding-box,
+                linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-primary)) border-box;
+    border: 2px dashed transparent;
     border-radius: var(--radius-lg);
     padding: 4rem 2rem;
     text-align: center;
     transition: var(--transition);
     position: relative;
     overflow: hidden;
+    background-size: 200% 200%;
+    animation: borderGlow 3s ease infinite;
 }
 
 .upload-area:hover,
@@ -1188,9 +1196,9 @@ body.is-loaded .scroll-indicator {
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    background: linear-gradient(90deg, transparent, var(--color-accent), var(--color-primary-light), var(--color-accent), transparent);
     animation: scanLine 2s linear infinite;
-    box-shadow: 0 0 10px var(--color-accent);
+    box-shadow: 0 0 15px var(--color-accent), 0 0 30px rgba(201, 169, 110, 0.3);
 }
 
 @keyframes scanLine {
@@ -1217,6 +1225,8 @@ body.is-loaded .scroll-indicator {
 .step.active {
     background: rgba(201, 169, 110, 0.1);
     border: 1px solid rgba(201, 169, 110, 0.2);
+    position: relative;
+    overflow: hidden;
 }
 
 .step.completed {
@@ -1289,8 +1299,10 @@ body.is-loaded .scroll-indicator {
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: var(--transition);
+    transition: all 0.3s ease;
     font-family: var(--font-sans);
+    position: relative;
+    overflow: hidden;
 }
 
 .tab-btn:hover {
@@ -2165,4 +2177,688 @@ body.is-loaded .scroll-indicator {
 [data-aos].aos-animate {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* ========================================
+   全局滚动进度条
+   ======================================== */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-secondary));
+    z-index: 9999;
+    transition: width 0.1s linear;
+    box-shadow: 0 0 8px rgba(201, 169, 110, 0.5);
+}
+
+.scroll-progress::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: -3px;
+    width: 8px;
+    height: 9px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(201, 169, 110, 0.8);
+}
+
+/* ========================================
+   返回顶部按钮
+   ======================================== */
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.8);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 20px rgba(139, 94, 52, 0.4);
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.back-to-top:hover {
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 6px 30px rgba(201, 169, 110, 0.5);
+}
+
+.back-to-top-icon {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+/* ========================================
+   Features 区域增强动画
+   ======================================== */
+.features {
+    overflow: hidden;
+}
+
+/* 背景装饰 */
+.section-bg-decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.decor-circle {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.15;
+}
+
+.decor-circle-1 {
+    width: 300px;
+    height: 300px;
+    background: var(--color-accent);
+    top: -100px;
+    right: -80px;
+    animation: floatSlow 12s ease-in-out infinite;
+}
+
+.decor-circle-2 {
+    width: 250px;
+    height: 250px;
+    background: var(--color-secondary);
+    bottom: -80px;
+    left: -60px;
+    animation: floatSlow 15s ease-in-out infinite reverse;
+}
+
+.decor-float-char {
+    position: absolute;
+    font-family: var(--font-serif);
+    font-size: 8rem;
+    font-weight: 900;
+    color: rgba(201, 169, 110, 0.03);
+    pointer-events: none;
+    animation: charFloat 20s ease-in-out infinite;
+}
+
+.decor-char-1 {
+    top: 10%;
+    left: 5%;
+    animation-delay: 0s;
+}
+
+.decor-char-2 {
+    top: 40%;
+    right: 8%;
+    animation-delay: -7s;
+    font-size: 10rem;
+}
+
+.decor-char-3 {
+    bottom: 10%;
+    left: 15%;
+    animation-delay: -13s;
+}
+
+@keyframes floatSlow {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(20px, -15px) rotate(3deg); }
+    66% { transform: translate(-15px, 10px) rotate(-2deg); }
+}
+
+@keyframes charFloat {
+    0%, 100% { transform: translateY(0) rotate(-5deg); opacity: 0.03; }
+    50% { transform: translateY(-20px) rotate(5deg); opacity: 0.06; }
+}
+
+/* Features section-header 入场 */
+.section-header {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.section-header.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 功能卡片增强入场动画 - 保留现有hover效果 */
+.feature-card {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow var(--transition), border-color var(--transition);
+}
+
+.feature-card.aos-animate {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.feature-card:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+/* 图标呼吸发光 */
+.feature-icon {
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    animation: iconBreathe 1.5s ease-in-out infinite;
+}
+
+@keyframes iconBreathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+.feature-glow {
+    animation: glowPulse 3s ease-in-out infinite;
+    opacity: 0.3 !important;
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.3); }
+}
+
+/* feature-tag闪光 */
+.feature-tag {
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-tag::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: tagShine 4s ease-in-out infinite;
+}
+
+@keyframes tagShine {
+    0%, 100% { left: -100%; }
+    50% { left: 100%; }
+}
+
+/* ========================================
+   Demo 区域增强动画
+   ======================================== */
+.demo {
+    overflow: hidden;
+}
+
+/* Demo背景浮动粒子 */
+.demo-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.demo-particles::before,
+.demo-particles::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201, 169, 110, 0.08), transparent);
+}
+
+.demo-particles::before {
+    width: 200px;
+    height: 200px;
+    top: 20%;
+    left: 10%;
+    animation: demoParticleFloat 8s ease-in-out infinite;
+}
+
+.demo-particles::after {
+    width: 150px;
+    height: 150px;
+    bottom: 30%;
+    right: 15%;
+    animation: demoParticleFloat 10s ease-in-out infinite reverse;
+}
+
+@keyframes demoParticleFloat {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(30px, -20px); }
+    50% { transform: translate(-10px, 15px); }
+    75% { transform: translate(20px, 10px); }
+}
+
+/* 上传区域边框流光 */
+.upload-area {
+    position: relative;
+}
+
+.upload-area::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: conic-gradient(from 0deg, transparent, rgba(201, 169, 110, 0.4), transparent, rgba(139, 94, 52, 0.4), transparent);
+    border-radius: var(--radius-lg);
+    animation: borderRotate 6s linear infinite;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: -1;
+}
+
+.upload-area:hover::before {
+    opacity: 1;
+}
+
+@keyframes borderRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 上传图标浮动 */
+.upload-icon {
+    animation: uploadIconFloat 3s ease-in-out infinite;
+}
+
+@keyframes uploadIconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* 扫描线增强 */
+.processing-scan-line {
+    height: 3px !important;
+    box-shadow: 0 0 15px var(--color-accent), 0 0 30px rgba(201, 169, 110, 0.3) !important;
+}
+
+/* 步骤流光包裹 */
+.step.active {
+    position: relative;
+    overflow: hidden;
+}
+
+.step.active::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.1), transparent);
+    background-size: 200% 100%;
+    animation: stepFlow 1.5s linear infinite;
+}
+
+@keyframes stepFlow {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* 标签切换滑动指示器 */
+.result-tabs {
+    position: relative;
+}
+
+.tab-btn {
+    position: relative;
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: var(--color-accent);
+    box-shadow: 0 0 8px rgba(201, 169, 110, 0.5);
+    animation: tabSlideIn 0.3s ease;
+}
+
+@keyframes tabSlideIn {
+    from { width: 0; opacity: 0; }
+    to { width: 60%; opacity: 1; }
+}
+
+/* tab-content增强 */
+.tab-content.active {
+    animation: tabContentIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+@keyframes tabContentIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+/* ========================================
+   Tech 区域增强动画
+   ======================================== */
+.tech {
+    overflow: hidden;
+}
+
+/* Tech背景网格 */
+.tech-bg-grid {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: 
+        linear-gradient(rgba(201, 169, 110, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201, 169, 110, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridShift 20s linear infinite;
+}
+
+@keyframes gridShift {
+    0% { background-position: 0 0; }
+    100% { background-position: 60px 60px; }
+}
+
+.tech-showcase {
+    position: relative;
+    z-index: 1;
+}
+
+/* Tech节点脉冲 */
+.tech-node {
+    position: relative;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease, box-shadow var(--transition);
+}
+
+.tech-node.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.tech-node::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: var(--radius-lg);
+    border: 2px solid transparent;
+    background: conic-gradient(from var(--node-angle, 0deg), transparent, var(--color-accent), transparent) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: nodeSpin 4s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tech-node:hover::after {
+    opacity: 1;
+}
+
+@keyframes nodeSpin {
+    0% { --node-angle: 0deg; }
+    100% { --node-angle: 360deg; }
+}
+
+/* 由于CSS自定义属性动画兼容性问题，用备选方案 */
+.tech-node::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: calc(var(--radius-lg) + 2px);
+    border: 2px solid transparent;
+    border-top-color: var(--color-accent);
+    animation: nodeRotate 3s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tech-node:hover::before {
+    opacity: 1;
+}
+
+@keyframes nodeRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Tech节点图标浮动 */
+.tech-node-icon {
+    animation: techIconFloat 2.5s ease-in-out infinite;
+}
+
+@keyframes techIconFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* 箭头流光 */
+.tech-arrow {
+    font-size: 1.5rem;
+    color: var(--color-accent);
+    opacity: 0.5;
+    position: relative;
+    animation: arrowPulse 2s ease-in-out infinite;
+}
+
+@keyframes arrowPulse {
+    0%, 100% { opacity: 0.3; transform: translateX(0); }
+    50% { opacity: 0.8; transform: translateX(4px); }
+}
+
+/* ========================================
+   About 区域增强动画
+   ======================================== */
+.about {
+    overflow: hidden;
+}
+
+/* About背景装饰 */
+.about-decor {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.about-decor-circle {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px solid rgba(201, 169, 110, 0.08);
+}
+
+.about-decor-circle-1 {
+    width: 400px;
+    height: 400px;
+    top: -100px;
+    right: -100px;
+    animation: aboutCircleSpin 30s linear infinite;
+}
+
+.about-decor-circle-2 {
+    width: 250px;
+    height: 250px;
+    bottom: -50px;
+    left: -80px;
+    animation: aboutCircleSpin 25s linear infinite reverse;
+}
+
+.about-decor-line {
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(201, 169, 110, 0.06), transparent);
+}
+
+.about-decor-line-1 {
+    left: 20%;
+    animation: lineFloat 15s ease-in-out infinite;
+}
+
+@keyframes aboutCircleSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+@keyframes lineFloat {
+    0%, 100% { transform: translateX(0); opacity: 0.3; }
+    50% { transform: translateX(30px); opacity: 0.8; }
+}
+
+/* About卡片3D悬浮 */
+.about-card {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow var(--transition);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+}
+
+.about-card.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.about-card:hover {
+    transform: translateY(-6px) rotateX(2deg) rotateY(-2deg) !important;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(201, 169, 110, 0.1),
+        inset 0 0 30px rgba(201, 169, 110, 0.03);
+    border-color: rgba(201, 169, 110, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* About图标发光 */
+.about-icon {
+    filter: drop-shadow(0 0 0 transparent);
+    transition: filter 0.3s ease;
+}
+
+.about-card:hover .about-icon {
+    filter: drop-shadow(0 0 15px rgba(201, 169, 110, 0.5));
+    animation: aboutIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes aboutIconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* 徽章脉动 */
+.about-badge {
+    animation: badgePulse 3s ease-in-out infinite;
+}
+
+.about-badge:nth-child(1) { animation-delay: 0s; }
+.about-badge:nth-child(2) { animation-delay: 1s; }
+.about-badge:nth-child(3) { animation-delay: 2s; }
+
+@keyframes badgePulse {
+    0%, 100% { box-shadow: 0 0 0 rgba(201, 169, 110, 0); }
+    50% { box-shadow: 0 0 15px rgba(201, 169, 110, 0.3); }
+}
+
+/* About footer淡入 */
+.about-footer {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease 0.5s;
+}
+
+.about-footer.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ========================================
+   Footer 增强动画
+   ======================================== */
+.footer {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease;
+}
+
+.footer.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Footer顶部装饰线 */
+.footer::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--color-accent), transparent);
+    animation: footerLineShimmer 4s ease-in-out infinite;
+}
+
+@keyframes footerLineShimmer {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+/* Footer链接流光hover */
+.footer-link {
+    position: relative;
+}
+
+.footer-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-primary-light));
+    transition: width 0.3s ease;
+    box-shadow: 0 0 5px rgba(201, 169, 110, 0.5);
+}
+
+.footer-link:hover::after {
+    width: 100%;
+}
+
+/* ========================================
+   增强版 AOS (滚动动画) 基础
+   ======================================== */
+[data-aos="fade-up"] {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+[data-aos="fade-up"].aos-animate {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ========================================
+   全局特效响应式适配
+   ======================================== */
+@media (max-width: 768px) {
+    .decor-float-char { font-size: 5rem !important; }
+    .decor-circle-1, .decor-circle-2 { width: 150px !important; height: 150px !important; }
+    .about-decor-circle-1 { width: 200px !important; height: 200px !important; }
+    .tech-bg-grid { display: none; }
+    .back-to-top { width: 40px; height: 40px; bottom: 1.5rem; right: 1.5rem; }
 }
