@@ -236,6 +236,10 @@ body {
     bottom: 0;
 }
 
+.scroll-loader.opened {
+    background: transparent;
+}
+
 .scroll-loader.opened .scroll-rod-top {
     transform: translateY(calc(-50vh - 40px));
 }
