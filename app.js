@@ -1593,14 +1593,14 @@ function enableQA() {
     if (qaSendBtn) qaSendBtn.disabled = false;
 
     // 欢迎消息
-    const chatMessages = document.getElementById('chatMessages');
+    const chatMessages = document.getElementById('qaMessages');
     if (chatMessages && chatMessages.children.length === 0) {
         addQAMessage('ai', '您好！我是典籍助手，您可以向我提问关于这段文字的任何问题，例如：\n· 这段话的核心思想是什么？\n· 孔子是谁？\n· "君子"是什么意思？');
     }
 }
 
 function addQAMessage(role, text, id, isThinking) {
-    const chatMessages = document.getElementById('chatMessages');
+    const chatMessages = document.getElementById('qaMessages');
     if (!chatMessages) return;
 
     const msg = document.createElement('div');
@@ -1926,7 +1926,7 @@ function initReset() {
         APP_STATE.isSpeaking = false;
 
         // 重置聊天
-        const chatMessages = document.getElementById('chatMessages');
+        const chatMessages = document.getElementById('qaMessages');
         if (chatMessages) chatMessages.innerHTML = '';
 
         // 重置QA输入
