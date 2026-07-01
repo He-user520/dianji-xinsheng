@@ -2157,8 +2157,78 @@ function initTabs() {
 // ========================================
 // 初始化入口
 // ========================================
+
+// 清理TRAE预览工具注入的调试标注覆盖层
+function cleanupDebugOverlays() {
+    // 我们页面中body直接子元素的白名单
+    const whitelist = new Set([
+        'scrollLoader', 'particleCanvas', 'scrollProgress',
+        'shareModal', 'toastContainer'
+    ]);
+
+    // 清理已有的非页面覆盖层
+    function removeOverlays() {
+        const allChildren = document.body.children;
+        for (let i = allChildren.length - 1; i >= 0; i--) {
+            const el = allChildren[i];
+            if (el.id && whitelist.has(el.id)) continue;
+            if (el.tagName === 'CANVAS' && el.id === 'particleCanvas') continue;
+            if (el.tagName === 'NAV') continue;
+            if (el.tagName === 'SECTION') continue;
+            if (el.tagName === 'FOOTER') continue;
+            if (el.tagName === 'DIV') {
+                const text = el.textContent || '';
+                // 检测TRAE调试标注特征
+                if ((text.includes('Hero') || text.includes('Banner') ||
+                     text.includes('#0a') || text.includes('#c9') ||
+                     text.includes('AI平台') || text.includes('设纪')) &&
+                    el.style &&
+                    (el.style.position === 'fixed' || el.style.position === 'absolute')) {
+                    el.remove();
+                    continue;
+                }
+            }
+        }
+        // 也检查shadow host
+        document.querySelectorAll('*').forEach(el => {
+            if (el.shadowRoot) {
+                const shadowText = el.shadowRoot.textContent || '';
+                if (shadowText.includes('Hero') && shadowText.includes('Banner')) {
+                    el.style.display = 'none';
+                }
+            }
+        });
+    }
+
+    // 立即执行一次
+    removeOverlays();
+
+    // MutationObserver持续监控
+    const observer = new MutationObserver((mutations) => {
+        let found = false;
+        for (const m of mutations) {
+            for (const node of m.addedNodes) {
+                if (node.nodeType === 1 && node.tagName === 'DIV') {
+                    const text = node.textContent || '';
+                    if ((text.includes('Hero') || text.includes('Banner') ||
+                         text.includes('#0a') || text.includes('设纪')) &&
+                        node.style && node.style.position === 'fixed') {
+                        node.remove();
+                        found = true;
+                    }
+                }
+            }
+        }
+    });
+
+    observer.observe(document.body, { childList: true });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     injectStyles();
+
+    // 清理TRAE预览工具注入的调试覆盖层
+    cleanupDebugOverlays();
 
     // 粒子背景
     const canvas = document.getElementById('particleCanvas');
