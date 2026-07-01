@@ -38,39 +38,6 @@
 }
 
 /* ========================================
-   0. 隐藏调试覆盖层（TRAE预览标注等）
-   ======================================== */
-html::before,
-html::after,
-body::before,
-body::after {
-    content: none !important;
-    display: none !important;
-}
-
-/* 屏蔽fixed定位的调试覆盖层（z-index超过9999的） */
-div[style*="z-index: 9999"],
-div[style*="z-index:9999"] {
-    display: none !important;
-}
-
-/* 页面顶层遮罩，盖住任何外部注入的标注层 */
-html {
-    position: relative;
-}
-
-body {
-    position: relative;
-    z-index: 1;
-}
-
-/* 强制隐藏任何不在我们白名单中的body直接子div */
-body > div:not(#scrollLoader):not(#particleCanvas):not(#scrollProgress):not(.toast-container):not(#shareModal) {
-    position: relative;
-    z-index: auto;
-}
-
-/* ========================================
    1. Reset & Base
    ======================================== */
 *, *::before, *::after {
@@ -185,7 +152,6 @@ body {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    display: none;
 }
 
 /* 上下卷轴杆 */
@@ -234,10 +200,6 @@ body {
 
 .scroll-rod-bottom {
     bottom: 0;
-}
-
-.scroll-loader.opened {
-    background: transparent;
 }
 
 .scroll-loader.opened .scroll-rod-top {
@@ -679,16 +641,46 @@ body.is-loaded .scroll-indicator {
 
 /* 金色流光扫过效果 */
 .title-line.shimmer {
-    animation: goldShimmer 3.5s linear infinite;
+    background: linear-gradient(
+        90deg,
+        #ffffff 0%,
+        #ffffff 40%,
+        #c9a96e 50%,
+        #e8d5a3 55%,
+        #c9a96e 60%,
+        #ffffff 70%,
+        #ffffff 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3.5s linear infinite;
 }
 
 .title-line.highlight.shimmer {
-    animation: goldShimmer 3s linear infinite;
+    background: linear-gradient(
+        90deg,
+        #c9a96e 0%,
+        #c9a96e 30%,
+        #fff5d6 45%,
+        #e8d5a3 50%,
+        #fff5d6 55%,
+        #c9a96e 70%,
+        #c9a96e 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
 }
 
 .title-line.highlight {
-    color: var(--color-accent);
-    text-shadow: 0 0 20px rgba(201, 169, 110, 0.3), 0 2px 4px rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, var(--color-accent), #e8d5a3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     position: relative;
 }
 
@@ -3528,17 +3520,6 @@ body.is-loaded .scroll-indicator {
 @keyframes shimmer {
     0% { background-position: 200% center; }
     100% { background-position: -200% center; }
-}
-
-@keyframes goldShimmer {
-    0%, 100% {
-        color: var(--color-accent);
-        text-shadow: 0 0 20px rgba(201, 169, 110, 0.3), 0 2px 4px rgba(0,0,0,0.2);
-    }
-    50% {
-        color: #fff5d6;
-        text-shadow: 0 0 30px rgba(201, 169, 110, 0.6), 0 2px 4px rgba(0,0,0,0.2);
-    }
 }
 
 @keyframes floatSlow {
