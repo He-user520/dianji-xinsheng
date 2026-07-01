@@ -2097,14 +2097,6 @@ function injectStyles() {
             0% { background-position: -200% center; }
             100% { background-position: 200% center; }
         }
-        .title-line.highlight.shimmer, .typewriter-line.highlight.shimmer {
-            background: linear-gradient(90deg, transparent 30%, rgba(201,169,110,0.4) 50%, transparent 70%);
-            background-size: 200% 100%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 2s ease forwards;
-        }
         .brush-text {
             position: relative;
         }
