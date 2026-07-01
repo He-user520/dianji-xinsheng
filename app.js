@@ -4,15 +4,27 @@
  */
 
 // ========================================
-// 粒子背景效果
+// 墨韵流光 - 三层粒子系统
+// 远景：金色光尘（呼吸闪烁+鼠标吸引）
+// 中景：墨点粒子（缓慢飘落）
+// 近景：汉字飘落（极低透明度）
+// 交互：鼠标引力场 + 点击涟漪 + 金色光晕跟随
 // ========================================
-class ParticleSystem {
+class InkParticleSystem {
     constructor(canvas) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d');
-        this.particles = [];
+        this.dustParticles = [];    // 金色光尘
+        this.inkParticles = [];     // 墨点
+        this.charParticles = [];    // 汉字
+        this.ripples = [];          // 点击涟漪
+        this.mouse = { x: -9999, y: -9999, active: false };
+        this.cursorGlow = { x: 0, y: 0, alpha: 0 };
+        this.chars = '之乎者也仁义礼智信道君子学诗书礼乐易春秋论语孟子大学中庸';
+        this.time = 0;
         this.resize();
         this.init();
+        this.bindEvents();
         this.animate();
         window.addEventListener('resize', () => this.resize());
     }
@@ -22,25 +34,182 @@ class ParticleSystem {
         this.canvas.height = window.innerHeight;
     }
 
-    init() {
-        const count = Math.floor(window.innerWidth / 15);
-        for (let i = 0; i < count; i++) {
-            this.particles.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                size: Math.random() * 2 + 0.5,
-                speedX: (Math.random() - 0.5) * 0.3,
-                speedY: (Math.random() - 0.5) * 0.3,
-                opacity: Math.random() * 0.5 + 0.1,
-                color: Math.random() > 0.5 ? '201, 169, 110' : '139, 94, 52'
+    bindEvents() {
+        window.addEventListener('mousemove', (e) => {
+            this.mouse.x = e.clientX;
+            this.mouse.y = e.clientY;
+            this.mouse.active = true;
+        });
+        window.addEventListener('mouseleave', () => {
+            this.mouse.active = false;
+        });
+        window.addEventListener('click', (e) => {
+            this.ripples.push({
+                x: e.clientX,
+                y: e.clientY,
+                radius: 0,
+                maxRadius: 80 + Math.random() * 40,
+                alpha: 0.6,
+                speed: 2 + Math.random()
             });
+        });
+        // 触摸支持
+        window.addEventListener('touchstart', (e) => {
+            const t = e.touches[0];
+            this.mouse.x = t.clientX;
+            this.mouse.y = t.clientY;
+            this.mouse.active = true;
+            this.ripples.push({
+                x: t.clientX,
+                y: t.clientY,
+                radius: 0,
+                maxRadius: 80,
+                alpha: 0.6,
+                speed: 2.5
+            });
+        });
+        window.addEventListener('touchmove', (e) => {
+            const t = e.touches[0];
+            this.mouse.x = t.clientX;
+            this.mouse.y = t.clientY;
+        });
+    }
+
+    init() {
+        // 金色光尘（远景层）- 80~120个
+        const dustCount = Math.min(120, Math.floor(window.innerWidth / 12));
+        for (let i = 0; i < dustCount; i++) {
+            this.dustParticles.push(this.createDust());
         }
+        // 墨点粒子（中景层）- 30~50个
+        const inkCount = Math.min(50, Math.floor(window.innerWidth / 30));
+        for (let i = 0; i < inkCount; i++) {
+            this.inkParticles.push(this.createInk());
+        }
+        // 汉字粒子（近景层）- 15~20个
+        const charCount = Math.min(20, Math.floor(window.innerWidth / 60));
+        for (let i = 0; i < charCount; i++) {
+            this.charParticles.push(this.createChar());
+        }
+    }
+
+    createDust() {
+        return {
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            size: Math.random() * 1.8 + 0.4,
+            baseSize: Math.random() * 1.8 + 0.4,
+            speedX: (Math.random() - 0.5) * 0.4,
+            speedY: (Math.random() - 0.5) * 0.3,
+            opacity: Math.random() * 0.4 + 0.1,
+            baseOpacity: Math.random() * 0.4 + 0.1,
+            phase: Math.random() * Math.PI * 2,
+            pulseSpeed: 0.005 + Math.random() * 0.01,
+            hue: Math.random() > 0.7 ? '232, 195, 130' : '201, 169, 110'
+        };
+    }
+
+    createInk() {
+        return {
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            size: Math.random() * 60 + 20,
+            speedX: (Math.random() - 0.5) * 0.15,
+            speedY: Math.random() * 0.2 + 0.05,
+            opacity: Math.random() * 0.06 + 0.02,
+            rotation: Math.random() * Math.PI * 2,
+            rotSpeed: (Math.random() - 0.5) * 0.002
+        };
+    }
+
+    createChar() {
+        return {
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            char: this.chars[Math.floor(Math.random() * this.chars.length)],
+            size: Math.random() * 20 + 16,
+            speedX: (Math.random() - 0.5) * 0.2,
+            speedY: Math.random() * 0.3 + 0.1,
+            opacity: Math.random() * 0.05 + 0.02,
+            rotation: Math.random() * 0.4 - 0.2,
+            rotSpeed: (Math.random() - 0.5) * 0.003
+        };
     }
 
     animate() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        this.particles.forEach(p => {
+        this.time++;
+
+        // ---- 绘制墨点（最底层）----
+        this.inkParticles.forEach(p => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.rotation += p.rotSpeed;
+
+            if (p.y - p.size > this.canvas.height) { p.y = -p.size; p.x = Math.random() * this.canvas.width; }
+            if (p.x < -p.size) p.x = this.canvas.width + p.size;
+            if (p.x > this.canvas.width + p.size) p.x = -p.size;
+
+            this.ctx.save();
+            this.ctx.translate(p.x, p.y);
+            this.ctx.rotate(p.rotation);
+            const gradient = this.ctx.createRadialGradient(0, 0, 0, 0, 0, p.size);
+            gradient.addColorStop(0, `rgba(60, 40, 20, ${p.opacity})`);
+            gradient.addColorStop(0.5, `rgba(80, 55, 30, ${p.opacity * 0.5})`);
+            gradient.addColorStop(1, 'rgba(60, 40, 20, 0)');
+            this.ctx.fillStyle = gradient;
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.restore();
+        });
+
+        // ---- 绘制汉字（中间层）----
+        this.charParticles.forEach(p => {
+            p.x += p.speedX;
+            p.y += p.speedY;
+            p.rotation += p.rotSpeed;
+
+            if (p.y - p.size > this.canvas.height) { p.y = -p.size; p.x = Math.random() * this.canvas.width; p.char = this.chars[Math.floor(Math.random() * this.chars.length)]; }
+            if (p.x < -p.size) p.x = this.canvas.width + p.size;
+            if (p.x > this.canvas.width + p.size) p.x = -p.size;
+
+            this.ctx.save();
+            this.ctx.translate(p.x, p.y);
+            this.ctx.rotate(p.rotation);
+            this.ctx.font = `${p.size}px "Noto Serif SC", serif`;
+            this.ctx.fillStyle = `rgba(201, 169, 110, ${p.opacity})`;
+            this.ctx.textAlign = 'center';
+            this.ctx.textBaseline = 'middle';
+            this.ctx.fillText(p.char, 0, 0);
+            this.ctx.restore();
+        });
+
+        // ---- 绘制金色光尘（上层）+ 鼠标引力 ----
+        this.dustParticles.forEach(p => {
+            // 呼吸闪烁
+            p.phase += p.pulseSpeed;
+            p.opacity = p.baseOpacity + Math.sin(p.phase) * 0.2;
+            p.size = p.baseSize + Math.sin(p.phase * 0.7) * 0.3;
+
+            // 鼠标引力
+            if (this.mouse.active) {
+                const dx = this.mouse.x - p.x;
+                const dy = this.mouse.y - p.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 150) {
+                    const force = (150 - dist) / 150;
+                    p.speedX += (dx / dist) * force * 0.08;
+                    p.speedY += (dy / dist) * force * 0.08;
+                    p.opacity = Math.min(0.8, p.opacity + force * 0.4);
+                    p.size = p.baseSize + force * 1.5;
+                }
+            }
+
+            // 阻尼
+            p.speedX *= 0.98;
+            p.speedY *= 0.98;
+
             p.x += p.speedX;
             p.y += p.speedY;
 
@@ -49,31 +218,193 @@ class ParticleSystem {
             if (p.y < 0) p.y = this.canvas.height;
             if (p.y > this.canvas.height) p.y = 0;
 
+            // 光晕
+            const glowSize = p.size * 3;
+            const glow = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowSize);
+            glow.addColorStop(0, `rgba(${p.hue}, ${p.opacity * 0.8})`);
+            glow.addColorStop(1, `rgba(${p.hue}, 0)`);
+            this.ctx.fillStyle = glow;
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, glowSize, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            // 核心点
             this.ctx.beginPath();
             this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = `rgba(${p.color}, ${p.opacity})`;
+            this.ctx.fillStyle = `rgba(${p.hue}, ${Math.min(1, p.opacity)})`;
             this.ctx.fill();
         });
 
-        // 连线效果
-        this.particles.forEach((p1, i) => {
-            this.particles.slice(i + 1).forEach(p2 => {
+        // ---- 光尘连线（近距离时）----
+        this.dustParticles.forEach((p1, i) => {
+            for (let j = i + 1; j < this.dustParticles.length; j++) {
+                const p2 = this.dustParticles[j];
                 const dx = p1.x - p2.x;
                 const dy = p1.y - p2.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 120) {
+                if (dist < 100) {
                     this.ctx.beginPath();
                     this.ctx.moveTo(p1.x, p1.y);
                     this.ctx.lineTo(p2.x, p2.y);
-                    this.ctx.strokeStyle = `rgba(201, 169, 110, ${0.1 * (1 - dist / 120)})`;
+                    this.ctx.strokeStyle = `rgba(201, 169, 110, ${0.08 * (1 - dist / 100)})`;
                     this.ctx.lineWidth = 0.5;
                     this.ctx.stroke();
                 }
-            });
+            }
         });
+
+        // ---- 点击涟漪 ----
+        this.ripples = this.ripples.filter(r => {
+            r.radius += r.speed;
+            r.alpha *= 0.96;
+            if (r.alpha < 0.01 || r.radius > r.maxRadius) return false;
+
+            this.ctx.beginPath();
+            this.ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+            this.ctx.strokeStyle = `rgba(201, 169, 110, ${r.alpha})`;
+            this.ctx.lineWidth = 1.5;
+            this.ctx.stroke();
+
+            // 内圈
+            this.ctx.beginPath();
+            this.ctx.arc(r.x, r.y, r.radius * 0.6, 0, Math.PI * 2);
+            this.ctx.strokeStyle = `rgba(139, 94, 52, ${r.alpha * 0.5})`;
+            this.ctx.lineWidth = 1;
+            this.ctx.stroke();
+            return true;
+        });
+
+        // ---- 鼠标金色光晕跟随 ----
+        if (this.mouse.active) {
+            this.cursorGlow.x += (this.mouse.x - this.cursorGlow.x) * 0.1;
+            this.cursorGlow.y += (this.mouse.y - this.cursorGlow.y) * 0.1;
+            this.cursorGlow.alpha += (0.15 - this.cursorGlow.alpha) * 0.08;
+        } else {
+            this.cursorGlow.alpha *= 0.92;
+        }
+
+        if (this.cursorGlow.alpha > 0.01) {
+            const cg = this.ctx.createRadialGradient(
+                this.cursorGlow.x, this.cursorGlow.y, 0,
+                this.cursorGlow.x, this.cursorGlow.y, 120
+            );
+            cg.addColorStop(0, `rgba(201, 169, 110, ${this.cursorGlow.alpha})`);
+            cg.addColorStop(0.3, `rgba(201, 169, 110, ${this.cursorGlow.alpha * 0.3})`);
+            cg.addColorStop(1, 'rgba(201, 169, 110, 0)');
+            this.ctx.fillStyle = cg;
+            this.ctx.beginPath();
+            this.ctx.arc(this.cursorGlow.x, this.cursorGlow.y, 120, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
 
         requestAnimationFrame(() => this.animate());
     }
+}
+
+// ========================================
+// 页面加载卷轴动画
+// ========================================
+function initScrollLoader() {
+    const loader = document.getElementById('scrollLoader');
+    if (!loader) return;
+
+    // 加载期间禁止滚动
+    document.body.style.overflow = 'hidden';
+
+    // 等待页面资源加载完成后展开卷轴
+    const startOpen = () => {
+        // 先短暂显示加载状态，再展开
+        setTimeout(() => {
+            loader.classList.add('opened');
+            // 卷轴展开后，切换body状态类，触发hero区域入场动画
+            document.body.classList.remove('is-loading');
+            document.body.classList.add('is-loaded');
+            // 卷轴开始展开的同时启动打字机效果（与hero淡入同步）
+            setTimeout(() => {
+                startTypewriter();
+            }, 400);
+            // 卷轴展开后，再淡出遮罩
+            setTimeout(() => {
+                loader.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 1200);
+        }, 800);
+    };
+
+    if (document.readyState === 'complete') {
+        startOpen();
+    } else {
+        window.addEventListener('load', startOpen);
+        // 兜底：即使load事件未触发，3秒后也展开
+        setTimeout(startOpen, 3000);
+    }
+}
+
+// ========================================
+// Hero 标题打字机效果
+// ========================================
+function startTypewriter() {
+    const lines = document.querySelectorAll('.typewriter-line');
+    const cursor = document.querySelector('.typewriter-cursor');
+    if (!lines.length) return;
+
+    let lineIndex = 0;
+    let charIndex = 0;
+    const typeSpeed = 120; // 每个字的间隔(ms)
+    const lineDelay = 400; // 两行之间的间隔(ms)
+
+    function moveCursorToLine(lineEl) {
+        if (cursor && lineEl) {
+            lineEl.appendChild(cursor);
+            cursor.classList.remove('hidden');
+            cursor.classList.add('visible');
+        }
+    }
+
+    function typeChar() {
+        if (lineIndex >= lines.length) {
+            // 打字完成
+            if (cursor) {
+                setTimeout(() => cursor.classList.add('hidden'), 800);
+            }
+            // 为每行添加流光效果
+            lines.forEach((line, i) => {
+                setTimeout(() => {
+                    line.classList.add('shimmer', 'done');
+                    if (line.classList.contains('highlight')) {
+                        line.classList.add('underline-show');
+                    }
+                }, i * 300);
+            });
+            return;
+        }
+
+        const currentLine = lines[lineIndex];
+        const text = currentLine.getAttribute('data-text') || '';
+
+        if (charIndex === 0) {
+            currentLine.classList.add('typing');
+            currentLine.textContent = '';
+            moveCursorToLine(currentLine);
+        }
+
+        if (charIndex < text.length) {
+            // 在光标前插入字符
+            currentLine.insertBefore(document.createTextNode(text[charIndex]), cursor);
+            charIndex++;
+            setTimeout(typeChar, typeSpeed);
+        } else {
+            // 当前行完成
+            currentLine.classList.remove('typing');
+            currentLine.classList.add('done');
+            lineIndex++;
+            charIndex = 0;
+            setTimeout(typeChar, lineDelay);
+        }
+    }
+
+    // 开始打字
+    typeChar();
 }
 
 // ========================================
@@ -1320,9 +1651,12 @@ function initSmoothScroll() {
 // 初始化
 // ========================================
 document.addEventListener('DOMContentLoaded', () => {
+    // 卷轴加载动画（内部会在完成后触发打字机效果）
+    initScrollLoader();
+
     // 粒子背景
     const canvas = document.getElementById('particleCanvas');
-    if (canvas) new ParticleSystem(canvas);
+    if (canvas) new InkParticleSystem(canvas);
 
     // 初始化所有功能
     initNavbar();

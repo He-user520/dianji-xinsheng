@@ -7,7 +7,21 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="is-loading">
+    <!-- 页面加载卷轴遮罩 -->
+    <div class="scroll-loader" id="scrollLoader">
+        <div class="scroll-scroll scroll-scroll-top"></div>
+        <div class="scroll-scroll scroll-scroll-bottom"></div>
+        <div class="scroll-left-mask"></div>
+        <div class="scroll-right-mask"></div>
+        <div class="scroll-center-bar"></div>
+        <div class="scroll-content">
+            <div class="scroll-emblem">&#x1F4DC;</div>
+            <div class="scroll-title">典籍新生</div>
+            <div class="scroll-subtitle">正在展开千年卷轴...</div>
+        </div>
+    </div>
+
     <!-- 粒子背景画布 -->
     <canvas id="particleCanvas"></canvas>
 
@@ -41,8 +55,9 @@
         <div class="hero-content">
             <div class="hero-tag">&#x2728; TRAE AI 创造力大赛参赛作品</div>
             <h1 class="hero-title">
-                <span class="title-line">让千年典籍</span>
-                <span class="title-line highlight">在指尖重生</span>
+                <span class="title-line typewriter-line" data-text="让千年典籍"></span>
+                <span class="title-line highlight typewriter-line" data-text="在指尖重生"></span>
+                <span class="typewriter-cursor"></span>
             </h1>
             <p class="hero-subtitle">
                 上传一张古籍照片，AI 自动完成识别、断句、翻译、注释、知识图谱构建<br>
@@ -82,6 +97,15 @@
             <span class="scroll-text">向下滚动</span>
         </div>
     </section>
+
+    <!-- 水墨分隔符：Hero → Features（深色→浅色） -->
+    <div class="ink-divider ink-divider-dark-to-light" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,40 C120,10 240,70 360,45 C480,20 600,60 720,40 C840,20 960,65 1080,45 C1200,25 1320,55 1440,35 L1440,80 L0,80 Z" fill="#faf8f4"/>
+            <path d="M0,55 C180,25 360,75 540,50 C720,25 900,70 1080,50 C1260,30 1380,60 1440,50 L1440,80 L0,80 Z" fill="#faf8f4" opacity="0.6"/>
+            <path d="M0,65 C200,45 400,80 600,60 C800,40 1000,75 1200,58 C1320,50 1400,68 1440,62 L1440,80 L0,80 Z" fill="#faf8f4" opacity="0.3"/>
+        </svg>
+    </div>
 
     <!-- 功能展示区 -->
     <section id="features" class="features">
@@ -147,6 +171,15 @@
             </div>
         </div>
     </section>
+
+    <!-- 水墨分隔符：Features → Demo（浅色→深色） -->
+    <div class="ink-divider ink-divider-light-to-dark" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,40 C120,70 240,10 360,35 C480,60 600,20 720,40 C840,60 960,15 1080,35 C1200,55 1320,25 1440,45 L1440,80 L0,80 Z" fill="#0a1628"/>
+            <path d="M0,55 C180,75 360,25 540,50 C720,75 900,30 1080,50 C1260,70 1380,40 1440,50 L1440,80 L0,80 Z" fill="#0a1628" opacity="0.6"/>
+            <path d="M0,65 C200,75 400,40 600,60 C800,80 1000,45 1200,62 C1320,70 1400,52 1440,58 L1440,80 L0,80 Z" fill="#0a1628" opacity="0.3"/>
+        </svg>
+    </div>
 
     <!-- Demo 体验区 -->
     <section id="demo" class="demo">
@@ -348,6 +381,15 @@
         </div>
     </section>
 
+    <!-- 水墨分隔符：Demo → Tech（深色→浅色） -->
+    <div class="ink-divider ink-divider-dark-to-light" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,45 C160,15 300,65 480,40 C660,15 820,60 980,38 C1140,16 1300,55 1440,30 L1440,80 L0,80 Z" fill="#faf8f4"/>
+            <path d="M0,58 C200,30 380,72 580,48 C780,24 960,68 1160,45 C1300,30 1400,55 1440,48 L1440,80 L0,80 Z" fill="#faf8f4" opacity="0.6"/>
+            <path d="M0,68 C240,50 460,78 700,60 C940,42 1140,72 1320,58 C1400,52 1440,65 1440,62 L1440,80 L0,80 Z" fill="#faf8f4" opacity="0.3"/>
+        </svg>
+    </div>
+
     <!-- 技术亮点 -->
     <section id="tech" class="tech">
         <div class="section-header">
@@ -383,6 +425,15 @@
             </div>
         </div>
     </section>
+
+    <!-- 水墨分隔符：Tech → About（浅色→深色） -->
+    <div class="ink-divider ink-divider-light-to-dark" aria-hidden="true">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,35 C140,65 280,10 440,38 C600,65 780,18 940,42 C1100,65 1260,22 1440,48 L1440,80 L0,80 Z" fill="#0a1628"/>
+            <path d="M0,52 C180,72 360,28 560,52 C760,75 940,32 1120,55 C1280,72 1380,42 1440,52 L1440,80 L0,80 Z" fill="#0a1628" opacity="0.6"/>
+            <path d="M0,66 C220,76 440,42 680,62 C920,80 1120,48 1280,64 C1380,72 1440,55 1440,60 L1440,80 L0,80 Z" fill="#0a1628" opacity="0.3"/>
+        </svg>
+    </div>
 
     <!-- 关于我们 -->
     <section id="about" class="about">
