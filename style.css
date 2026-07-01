@@ -40,15 +40,34 @@
 /* ========================================
    0. 隐藏调试覆盖层（TRAE预览标注等）
    ======================================== */
+html::before,
+html::after,
 body::before,
 body::after {
     content: none !important;
+    display: none !important;
 }
 
 /* 屏蔽fixed定位的调试覆盖层（z-index超过9999的） */
 div[style*="z-index: 9999"],
 div[style*="z-index:9999"] {
     display: none !important;
+}
+
+/* 页面顶层遮罩，盖住任何外部注入的标注层 */
+html {
+    position: relative;
+}
+
+body {
+    position: relative;
+    z-index: 1;
+}
+
+/* 强制隐藏任何不在我们白名单中的body直接子div */
+body > div:not(#scrollLoader):not(#particleCanvas):not(#scrollProgress):not(.toast-container):not(#shareModal) {
+    position: relative;
+    z-index: auto;
 }
 
 /* ========================================
